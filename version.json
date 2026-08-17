@@ -1,6 +1,6 @@
 {
-  "versionCode": 19,
-  "versionName": "1.0.19",
+  "versionCode": 18,
+  "versionName": "1.0.18",
   "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.18/app-release.apk",
   "releaseNotes": [
     "Переход на единую модель gemini-flash-latest",
