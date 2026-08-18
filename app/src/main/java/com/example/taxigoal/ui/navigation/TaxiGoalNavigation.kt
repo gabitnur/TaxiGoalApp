@@ -70,9 +70,21 @@ fun TaxiGoalNavigation() {
                     if (success) AppLogger.info("Auth", "AUTH_GOOGLE_SUCCESS", "Firebase signed in")
                     else AppLogger.error("Auth", "AUTH_GOOGLE_FAILED", "Firebase sign in failed")
                 }
+            } catch (e: ApiException) {
+                val statusCode = e.statusCode
+                val statusMessage = com.google.android.gms.common.api.CommonStatusCodes.getStatusCodeString(statusCode)
+                AppLogger.error("Auth", "AUTH_GOOGLE_FAILED", "Code: $statusCode ($statusMessage)")
+                
+                val hint = when (statusCode) {
+                    10 -> "DEVELOPER_ERROR: Проверьте SHA-1 в консоли Firebase"
+                    12500 -> "SIGN_IN_FAILED: Проверьте интернет или Google Play Services"
+                    12501 -> "SIGN_IN_CANCELLED: Вы отменили вход"
+                    else -> "Ошибка #$statusCode: $statusMessage"
+                }
+                Toast.makeText(context, hint, Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                AppLogger.error("Auth", "AUTH_GOOGLE_FAILED", e.message ?: "ApiException")
-                Toast.makeText(context, "Google Sign In Failed", Toast.LENGTH_SHORT).show()
+                AppLogger.error("Auth", "AUTH_GOOGLE_FAILED", e.message ?: "Unknown Exception")
+                Toast.makeText(context, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -94,7 +106,30 @@ fun TaxiGoalNavigation() {
             LoginScreen(
                 onGoogleLoginClick = { 
                     AppLogger.buttonClick("Login", "BTN_GOOGLE_LOGIN")
-                    googleLauncher.launch(googleSignInClient.signInIntent)
+                    
+                    val googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance()
+                    val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context)
+                    
+                    if (resultCode == com.google.android.gms.common.ConnectionResult.SUCCESS) {
+                        try {
+                            googleLauncher.launch(googleSignInClient.signInIntent)
+                        } catch (e: Exception) {
+                            AppLogger.error("Auth", "LAUNCH_FAILED", e.message ?: "Unknown")
+                            Toast.makeText(context, "Не удалось запустить вход", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        AppLogger.warn("Auth", "PLAY_SERVICES_MISSING", "Code: $resultCode")
+                        if (googleApiAvailability.isUserResolvableError(resultCode)) {
+                            val activity = context as? Activity
+                            if (activity != null) {
+                                googleApiAvailability.getErrorDialog(activity, resultCode, 9000)?.show()
+                            } else {
+                                Toast.makeText(context, "Обновите Google Play Services", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(context, "Google Play Services не поддерживаются", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 },
                 onGuestLoginClick = { 
                     AppLogger.info("Auth", "AUTH_ANONYMOUS_START", "Starting guest login")
