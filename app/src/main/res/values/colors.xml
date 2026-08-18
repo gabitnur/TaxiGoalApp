@@ -24,4 +24,8 @@
     <color name="picker_green">#00E676</color>
     <color name="picker_pink">#F72585</color>
     <color name="alaman_blue">#0088CC</color>
+
+    <color name="app_background">#FFFFFF</color>
+    <color name="card_background">#F2F2F7</color>
+    <color name="text_primary">#000000</color>
 </resources>
