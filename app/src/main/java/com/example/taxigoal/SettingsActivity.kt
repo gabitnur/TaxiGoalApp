@@ -83,33 +83,25 @@ class SettingsActivity : BaseActivity() {
             
             MainScope().launch {
                 var foundWorking = false
-                val candidates = GeminiManager.getCandidateModels()
+                val modelName = GeminiManager.WORKING_MODEL_NAME
                 
-                for (modelName in candidates) {
-                    try {
-                        val testModel = com.google.ai.client.generativeai.GenerativeModel(modelName = modelName, apiKey = key)
-                        val response = withContext(Dispatchers.IO) {
-                            testModel.generateContent("Say hello")
-                        }
+                try {
+                    val testModel = com.google.ai.client.generativeai.GenerativeModel(modelName = modelName, apiKey = key)
+                    val response = withContext(Dispatchers.IO) {
+                        testModel.generateContent("Say hello")
+                    }
+                    
+                    if (response.text != null) {
+                        foundWorking = true
+                        prefs.edit().putString("gemini_api_key", key).apply()
                         
-                        if (response.text != null) {
-                            foundWorking = true
-                            GeminiManager.saveWorkingModel(this@SettingsActivity, modelName)
-                            prefs.edit().putString("gemini_api_key", key).apply()
-                            
-                            runOnUiThread {
-                                progress.dismiss()
-                                Toast.makeText(this@SettingsActivity, "✅ Ключ принят! Модель: $modelName", Toast.LENGTH_LONG).show()
-                            }
-                            break 
-                        }
-                    } catch (e: Exception) {
-                        val errorMsg = e.message ?: ""
-                        if (errorMsg.contains("invalid", true) || errorMsg.contains("API_KEY_INVALID", true)) {
-                             // Если ключ в принципе неверный - нет смысла перебирать дальше
-                             break
+                        runOnUiThread {
+                            progress.dismiss()
+                            Toast.makeText(this@SettingsActivity, "✅ Ключ принят! Модель: $modelName", Toast.LENGTH_LONG).show()
                         }
                     }
+                } catch (e: Exception) {
+                    // ...
                 }
                 
                 if (!foundWorking) {

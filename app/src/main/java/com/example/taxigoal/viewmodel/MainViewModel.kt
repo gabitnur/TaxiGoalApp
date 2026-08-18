@@ -191,7 +191,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _geminiError.value = null
             saveGeminiStatus(GeminiApiStatus.CHECKING)
             
-            val modelCandidates = listOf("gemini-1.5-flash", "gemini-pro", "gemini-1.5-flash-8b")
+            val modelCandidates = listOf(com.example.taxigoal.GeminiManager.WORKING_MODEL_NAME)
             var success = false
             var workingModel = ""
             var lastErr = ""
