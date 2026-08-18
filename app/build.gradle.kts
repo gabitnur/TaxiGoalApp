@@ -93,13 +93,13 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
 
     // Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-config")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-crashlytics")
-    implementation("com.google.firebase:firebase-analytics")
 
     // Google Sign-In & Drive API
     implementation("com.google.android.gms:play-services-auth:21.2.0")
