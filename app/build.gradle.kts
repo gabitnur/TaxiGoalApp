@@ -1,3 +1,5 @@
+import java.util.Properties
+
 // App build.gradle.kts
 plugins {
     alias(libs.plugins.android.application)
@@ -16,10 +18,19 @@ android {
         applicationId = "com.example.taxigoal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 20
-        versionName = "1.0.20"
+        versionCode = 22
+        versionName = "1.0.22"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Gemini API Key injection
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+        val geminiKey = properties.getProperty("GEMINI_API_KEY") ?: System.getenv("GEMINI_API_KEY") ?: ""
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
     }
 
     lint {
@@ -72,6 +83,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
