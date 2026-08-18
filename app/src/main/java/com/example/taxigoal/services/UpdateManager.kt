@@ -11,6 +11,8 @@ import android.os.Environment
 import androidx.core.content.FileProvider
 import com.example.taxigoal.utils.AppLogger
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,67 +30,105 @@ data class UpdateInfo(
 object UpdateManager {
 
     private const val VERSION_JSON_URL = "https://raw.githubusercontent.com/gabitnur/TaxiGoalApp/main/version.json"
+    private const val GITHUB_RELEASES_API = "https://api.github.com/repos/gabitnur/TaxiGoalApp/releases/latest"
 
     suspend fun checkUpdate(context: Context): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         try {
-            AppLogger.info("Update", "CHECK_START", "Checking update from GitHub: $VERSION_JSON_URL")
+            AppLogger.info("Update", "CHECK_START", "Checking update from: $VERSION_JSON_URL")
             
             val connection = URL(VERSION_JSON_URL).openConnection() as HttpURLConnection
-            connection.connectTimeout = 15000
-            connection.readTimeout = 15000
-            connection.requestMethod = "GET"
+            connection.connectTimeout = 10000
+            connection.readTimeout = 10000
             
             val responseCode = connection.responseCode
             if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                AppLogger.info("Update", "HTTP_404", "Version JSON not found (treating as no update)")
-                return@withContext Result.success(null)
+                AppLogger.info("Update", "VERSION_JSON_404", "Falling back to GitHub Releases API")
+                return@withContext checkUpdateFromGitHubApi(context)
             }
 
             if (responseCode != HttpURLConnection.HTTP_OK) {
-                val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }?.take(200)
-                AppLogger.error("Update", "HTTP_ERROR", "Code: $responseCode | Msg: $errorBody")
-                throw Exception("Сервер обновлений недоступен (HTTP $responseCode)")
+                throw Exception("HTTP Error $responseCode")
             }
 
             val body = connection.inputStream.bufferedReader().use { it.readText() }.trim()
+            val info = Gson().fromJson(body, UpdateInfo::class.java)
             
-            if (!body.startsWith("{") || !body.contains("versionCode")) {
-                AppLogger.error("Update", "INVALID_RESPONSE_FORMAT", "Expected JSON from GitHub, but received: ${body.take(100)}")
-                throw Exception("Не удалось получить информацию об обновлении. Проверьте подключение к интернету.")
-            }
-
-            val info = try {
-                Gson().fromJson(body, UpdateInfo::class.java)
-            } catch (e: JsonSyntaxException) {
-                AppLogger.error("Update", "GSON_PARSE_FAILED", AppLogger.getErrorDetails(e))
-                throw Exception("Ошибка в данных обновления на сервере.")
-            }
-            
-            val pInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.packageManager.getPackageInfo(context.packageName, android.content.pm.PackageManager.PackageInfoFlags.of(0))
-            } else {
-                @Suppress("DEPRECATION")
-                context.packageManager.getPackageInfo(context.packageName, 0)
-            }
-
-            val currentVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                pInfo.longVersionCode.toInt()
-            } else {
-                @Suppress("DEPRECATION")
-                pInfo.versionCode
-            }
-
-            if (info.versionCode > currentVersion) {
-                AppLogger.info("Update", "AVAILABLE", "New version detected: ${info.versionName}")
-                Result.success(info)
-            } else {
-                AppLogger.info("Update", "UP_TO_DATE", "Current version is latest")
-                Result.success(null)
-            }
+            compareAndReturn(context, info)
         } catch (e: Exception) {
-            val details = AppLogger.getErrorDetails(e)
-            AppLogger.error("Update", "CHECK_FAILED", "Exception occurred", details = details)
-            Result.failure(e)
+            // If primary source fails, try fallback one more time
+            try {
+                checkUpdateFromGitHubApi(context)
+            } catch (ex: Exception) {
+                AppLogger.error("Update", "CHECK_FAILED", e.message ?: "Unknown error")
+                Result.failure(e)
+            }
+        }
+    }
+
+    private suspend fun checkUpdateFromGitHubApi(context: Context): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
+        try {
+            val connection = URL(GITHUB_RELEASES_API).openConnection() as HttpURLConnection
+            connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
+            connection.setRequestProperty("User-Agent", "TaxiGoalApp")
+            
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                return@withContext Result.success(null)
+            }
+
+            val body = connection.inputStream.bufferedReader().use { it.readText() }
+            val json = Gson().fromJson(body, JsonObject::class.java)
+            
+            val tagName = json.get("tag_name").asString.removePrefix("v")
+            val assets = json.getAsJsonArray("assets")
+            var apkUrl = ""
+            
+            for (i in 0 until assets.size()) {
+                val asset = assets.get(i).asJsonObject
+                if (asset.get("name").asString == "update.apk") {
+                    apkUrl = asset.get("browser_download_url").asString
+                    break
+                }
+            }
+
+            if (apkUrl.isEmpty()) return@withContext Result.success(null)
+
+            // Since GitHub API doesn't provide versionCode directly, we estimate it from tag
+            // or just rely on versionName comparison. For safety, we'll parse it as a simple Int if possible.
+            val estimatedVersionCode = tagName.replace(".", "").toIntOrNull() ?: 0
+            
+            val info = UpdateInfo(
+                versionCode = estimatedVersionCode,
+                versionName = tagName,
+                apkUrl = apkUrl,
+                releaseNotes = listOf(json.get("body").asString.take(200))
+            )
+            
+            compareAndReturn(context, info)
+        } catch (e: Exception) {
+            Result.success(null)
+        }
+    }
+
+    private fun compareAndReturn(context: Context, info: UpdateInfo): Result<UpdateInfo?> {
+        val pInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.getPackageInfo(context.packageName, android.content.pm.PackageManager.PackageInfoFlags.of(0))
+        } else {
+            @Suppress("DEPRECATION")
+            context.packageManager.getPackageInfo(context.packageName, 0)
+        }
+
+        val currentVersionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pInfo.longVersionCode.toInt()
+        } else {
+            @Suppress("DEPRECATION")
+            pInfo.versionCode
+        }
+
+        return if (info.versionCode > currentVersionCode || info.versionName != pInfo.versionName) {
+            AppLogger.info("Update", "AVAILABLE", "New version: ${info.versionName}")
+            Result.success(info)
+        } else {
+            Result.success(null)
         }
     }
 
@@ -100,7 +140,7 @@ object UpdateManager {
         try {
             val request = DownloadManager.Request(Uri.parse(apkUrl))
                 .setTitle("Обновление приложения «МОЙ ДОХОД»")
-                .setDescription("Загрузка новой версии с GitHub...")
+                .setDescription("Загрузка новой версии...")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setDestinationUri(Uri.fromFile(destination))
 
