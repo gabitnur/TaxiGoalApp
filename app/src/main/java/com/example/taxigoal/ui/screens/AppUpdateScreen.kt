@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.taxigoal.BuildConfig
 import com.example.taxigoal.ui.theme.AppBackground
 import com.example.taxigoal.ui.theme.BrandPurple
 import com.example.taxigoal.utils.AppLogger
@@ -63,7 +64,7 @@ fun AppUpdateScreen(navController: NavController, mainViewModel: MainViewModel) 
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Black
             )
-            Text(text = "Текущая версия 1.0.16", color = Color.Gray, fontSize = 14.sp)
+            Text(text = "Текущая версия ${BuildConfig.VERSION_NAME}", color = Color.Gray, fontSize = 14.sp)
             
             Spacer(modifier = Modifier.height(48.dp))
 

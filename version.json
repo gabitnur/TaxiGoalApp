@@ -1,6 +1,10 @@
 {
-  "versionCode": 20,
-  "versionName": "1.0.20",
-  "downloadUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.20/update.apk",
-  "changelog": "Исправлена авторизация Gemini и обновлен интерфейс."
+  "versionCode": 22,
+  "versionName": "1.0.22",
+  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.22/update.apk",
+  "releaseNotes": [
+    "Переход на единую модель gemini-flash-latest",
+    "Исправление FileProvider для установки APK",
+    "Добавлены фоновые Push-уведомления и автопроверка версий"
+  ]
 }
