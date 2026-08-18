@@ -38,11 +38,7 @@ android {
 
     applicationVariants.all {
         outputs.map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }.forEach { output ->
-            if (buildType.name == "release") {
-                output.outputFileName = "update.apk"
-            } else {
-                output.outputFileName = "app-${buildType.name}.apk"
-            }
+            output.outputFileName = "update.apk"
         }
     }
 
