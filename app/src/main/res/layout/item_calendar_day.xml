@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dayContainer"
+    android:layout_width="match_parent"
+    android:layout_height="42dp"
+    android:background="?attr/card_bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="2dp">
+
+    <TextView
+        android:id="@+id/tvDayNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1"
+        android:textColor="?attr/text_main"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvDayPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100%"
+        android:textColor="?attr/text_main"
+        android:alpha="0.6"
+        android:textSize="9sp" />
+</LinearLayout>

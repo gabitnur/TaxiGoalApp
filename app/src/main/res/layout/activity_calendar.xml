@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?attr/card_bg"
+            android:text="@string/btn_back"
+            android:textColor="?attr/text_main"
+            app:cornerRadius="12dp"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <TextView
+            android:id="@+id/tvMonthYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="АВГУСТ 2026"
+            android:textColor="?attr/text_main"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnUndo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="@string/undo"
+            android:visibility="gone"
+            app:tint="?attr/text_main" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnOpenPdfImport"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="?attr/accent_main"
+        android:text="@string/import_pdf"
+        android:textColor="?attr/text_on_accent"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:cornerRadius="14dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnTabFact"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="?attr/accent_main"
+            android:text="@string/tab_fact"
+            android:textColor="?attr/text_on_accent"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+        <Button
+            android:id="@+id/btnTabBank"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="?attr/card_bg"
+            android:text="@string/tab_bank"
+            android:textColor="?attr/text_main"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+        <Button
+            android:id="@+id/btnTabSummary"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="?attr/card_bg"
+            android:text="@string/tab_summary"
+            android:textColor="?attr/text_main"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+        <Button
+            android:id="@+id/btnTabCompare"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_weight="1"
+            android:backgroundTint="?attr/card_bg"
+            android:text="@string/tab_compare"
+            android:textColor="?attr/text_main"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="?attr/card_bg"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="7"
+                android:layout_marginBottom="8dp">
+
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/mon" android:textColor="?attr/text_main" android:alpha="0.5" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/tue" android:textColor="?attr/text_main" android:alpha="0.5" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/wed" android:textColor="?attr/text_main" android:alpha="0.5" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/thu" android:textColor="?attr/text_main" android:alpha="0.5" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/fri" android:textColor="?attr/text_main" android:alpha="0.5" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/sat" android:textColor="?attr/text_main" android:alpha="0.5" android:textStyle="bold" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/sun" android:textColor="?attr/text_main" android:alpha="0.5" android:textStyle="bold" />
+            </LinearLayout>
+
+            <GridView
+                android:id="@+id/gridCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:numColumns="7"
+                android:horizontalSpacing="4dp"
+                android:verticalSpacing="4dp" />
+
+            <TextView
+                android:id="@+id/tvMonthTotal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="Итого за месяц: 0 ₸"
+                android:textColor="?attr/accent_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:cardBackgroundColor="?attr/card_bg"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/summary_title"
+                android:textColor="?attr/accent_main"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvSummaryTotalFact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Всего заработано (Факт): 0 ₸"
+                android:textColor="?attr/text_main"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvSummaryTotalBank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Прошло через Банк (PDF): 0 ₸"
+                android:textColor="?attr/text_main"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvSummaryCash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Наличка / Чаевые: 0 ₸"
+                android:textColor="?attr/accent_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="?attr/text_main"
+                android:alpha="0.1" />
+
+            <TextView
+                android:id="@+id/tvSummaryNet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ОБЩИЙ ЧИСТЫЙ ОСТАТОК: 0 ₸"
+                android:textColor="?attr/accent_primary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnApproveReconciliation"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="?attr/accent_primary"
+                android:text="@string/btn_approve_reconciliation"
+                android:textColor="?attr/text_on_accent"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="12dp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

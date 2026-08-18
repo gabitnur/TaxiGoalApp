@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg">
+
+    <ScrollView
+        android:id="@+id/main_scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:scrollbarThumbVertical="@null">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Header -->
+            <LinearLayout
+                android:id="@+id/header_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <TextView
+                    android:id="@+id/tvAppTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="РАСХОДОМЕТР"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.1"
+                    android:textColor="?attr/accent_primary"
+                    android:textSize="20sp" />
+
+                <ImageButton
+                    android:id="@+id/btnAiAssistant"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_info_details"
+                    app:tint="?attr/icon_tint" />
+
+                <ImageButton
+                    android:id="@+id/btnAiChat"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/stat_notify_chat"
+                    app:tint="?attr/icon_tint" />
+
+                <ImageButton
+                    android:id="@+id/btnSettings"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_preferences"
+                    app:tint="?attr/icon_tint" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOpenCalendar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="КАЛЕНДАРЬ"
+                    android:textSize="10sp"
+                    android:textColor="?attr/text_on_accent"
+                    app:backgroundTint="?attr/accent_main"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.Material3.Button.TonalButton" />
+            </LinearLayout>
+
+            <!-- Goal Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_goal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="32dp"
+                app:cardElevation="8dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/card_stroke"
+                app:cardBackgroundColor="?attr/card_bg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Текущий остаток"
+                        android:textColor="?attr/text_main"
+                        android:alpha="0.5"
+                        android:textSize="12sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvGoalTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="298 000 ₸"
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="?attr/accent_primary"
+                            android:textSize="32sp" />
+
+                        <ImageButton
+                            android:id="@+id/btnEditGoal"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@android:drawable/ic_menu_edit"
+                            app:tint="?attr/accent_primary" />
+                    </LinearLayout>
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progressBarGoal"
+                        android:layout_width="match_parent"
+                        android:layout_height="12dp"
+                        android:layout_marginTop="16dp"
+                        app:trackThickness="8dp"
+                        app:indicatorColor="?attr/accent_main"
+                        app:trackCornerRadius="6dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvSaved"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="ЖИНАЛДЫ: 0 ₸"
+                            android:textColor="?attr/text_main"
+                            android:alpha="0.8"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvRemaining"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ҚАЛДЫ: 0 ₸"
+                            android:textColor="?attr/text_main"
+                            android:alpha="0.6"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Today Fact -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_today"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="24dp"
+                app:cardBackgroundColor="?attr/accent_main"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvTodayFact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 ₸"
+                        android:textColor="?attr/text_on_accent"
+                        android:textSize="32sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <ImageButton
+                        android:id="@+id/btnEditTodayFact"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@android:drawable/ic_menu_edit"
+                        app:tint="?attr/text_on_accent" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmToGoal"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginBottom="16dp"
+                android:text="ЗАЧИСЛИТЬ В ЦЕЛЬ"
+                android:textColor="?attr/accent_primary"
+                app:backgroundTint="?attr/card_bg"
+                app:cornerRadius="20dp"
+                app:strokeColor="?attr/accent_primary"
+                app:strokeWidth="1dp" />
+
+            <!-- Input Area -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="28dp"
+                app:cardBackgroundColor="?attr/card_bg"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="?attr/card_stroke">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <EditText
+                        android:id="@+id/etCardInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@null"
+                        android:hint="Безнал (Карта)"
+                        android:inputType="number"
+                        android:textColor="?attr/text_main"
+                        android:textColorHint="?attr/text_main"
+                        android:alpha="0.6" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?attr/text_main"
+                        android:alpha="0.1"
+                        android:layout_marginVertical="8dp" />
+
+                    <EditText
+                        android:id="@+id/etCashInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@null"
+                        android:hint="Наличные"
+                        android:inputType="number"
+                        android:textColor="?attr/text_main"
+                        android:textColorHint="?attr/text_main"
+                        android:alpha="0.6" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddCash"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="16dp"
+                        android:text="ДОБАВИТЬ В ФАКТ"
+                        android:textColor="?attr/text_on_accent"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="?attr/accent_main" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="?attr/card_bg"
+        app:itemIconTint="?attr/accent_primary"
+        app:itemTextColor="?attr/text_main"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabVoiceAi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:src="@android:drawable/ic_btn_speak_now"
+        app:backgroundTint="?attr/accent_main"
+        app:tint="?attr/text_on_accent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

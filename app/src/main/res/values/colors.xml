@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TaxiGoal Brand Palette -->
+    <color name="brand_purple">#5C56E1</color>
+    <color name="brand_purple_light">#EEEDFD</color>
+    <color name="app_bg">#F8F9FE</color>
+    <color name="card_bg_white">#FFFFFF</color>
+    <color name="text_black">#1A1C1E</color>
+    <color name="text_gray">#70777C</color>
+
+    <!-- Accent Colors -->
+    <color name="yandex_yellow">#FFC107</color>
+    <color name="bank_green">#E8F5E9</color>
+    <color name="bank_green_text">#2E7D32</color>
+    <color name="error_red">#FF3B30</color>
+    <color name="warning_orange">#FF9500</color>
+    <color name="info_blue">#007AFF</color>
+
+    <!-- Theme Compatibility -->
+    <color name="theme_taxi_accent">#FBC02D</color>
+    <color name="picker_white">#FFFFFF</color>
+    <color name="picker_gold">#FBC02D</color>
+    <color name="picker_blue">#4CC9F0</color>
+    <color name="picker_green">#00E676</color>
+    <color name="picker_pink">#F72585</color>
+    <color name="alaman_blue">#0088CC</color>
+</resources>

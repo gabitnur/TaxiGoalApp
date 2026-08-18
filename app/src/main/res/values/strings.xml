@@ -1,0 +1,91 @@
+<resources>
+    <string name="app_name">МОЙ ДОХОД</string>
+    <string name="ai_assistant">AI Помощник</string>
+    <string name="settings">Настройки</string>
+    <string name="open_calendar">КАЛЕНДАРЬ</string>
+    <string name="goal_title_template">ЦЕЛЬ: %s ₸</string>
+    <string name="edit_goal">Редактировать цель</string>
+    <string name="saved_template">ЖИНАЛДЫ: %s ₸ (%d%%)</string>
+    <string name="remaining_template">ҚАЛДЫ: %s ₸</string>
+    <string name="day_income">🚕 ДОХОДЫ ЗА ДЕНЬ</string>
+    <string name="hint_card">Безнал (Карта)</string>
+    <string name="hint_cash_simple">Наличные</string>
+    <string name="net_profit_template">Чистый остаток (день): %s ₸</string>
+    <string name="developer_info">Разработчик Габит Нурмуханбетов</string>
+
+    <string name="btn_back">◀ НАЗАД</string>
+    <string name="tab_fact">🚕 ФАКТ</string>
+    <string name="tab_summary">📊 СВОДКА</string>
+    <string name="mon">ПН</string>
+    <string name="tue">ВТ</string>
+    <string name="wed">СР</string>
+    <string name="thu">ЧТ</string>
+    <string name="fri">ПТ</string>
+    <string name="sat">СБ</string>
+    <string name="sun">ВС</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="dark_theme">Тёмная тема</string>
+    <string name="light_theme">Светлая тема</string>
+    <string name="language">Язык приложения</string>
+    <string name="gemini_api_key">Gemini API Key</string>
+    <string name="hint_api_key">Введите ваш API ключ</string>
+    <string name="btn_verify_key">Проверить ключ</string>
+    <string name="key_valid">✅ Ключ валиден и сохранен!</string>
+    <string name="key_invalid">❌ Ошибка: Ключ не принят сервером</string>
+    <string name="key_verify_progress">Проверка ключа...</string>
+    <string name="key_empty">Введите ключ перед проверкой</string>
+
+    <string name="ai_assistant_title">AI Помощник ✨</string>
+    <string name="ai_bot_name">TaxiBot</string>
+    <string name="ai_status_analyzing">Анализирую ваши данные...</string>
+    <string name="btn_analyze_goal">🎯 КОГДА Я ДОСТИГНУ ЦЕЛИ?</string>
+    <string name="btn_analyze_fuel">⛽ СОВЕТ ПО ТОПЛИВУ</string>
+
+    <string name="btn_add">Добавить</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="default_web_client_id" translatable="false">532119914696-ee03kvbknrefvm2v2j6kehhfe9ismld1.apps.googleusercontent.com</string>
+
+    <!-- UI Compatibility Strings -->
+    <string name="import_pdf">📄 ИМПОРТ PDF</string>
+    <string name="tab_bank">🏦 БАНК</string>
+    <string name="tab_compare">⚖️ СВЕРКА</string>
+    <string name="summary_title">📊 ИТОГИ</string>
+    <string name="btn_approve_reconciliation">✅ ОДОБРИТЬ</string>
+    <string name="undo">Отменить</string>
+    <string name="pdf_import_title">Импорт PDF</string>
+    <string name="btn_select_pdf">📁 ВЫБРАТЬ PDF</string>
+    <string name="parsed_data_title">ДАННЫЕ:</string>
+    <string name="btn_approve_pdf">✅ ОДОБРИТЬ</string>
+    <string name="month_total_fact">Итого (Факт): %d ₸</string>
+    <string name="month_total_bank">Итого (Банк): %d ₸</string>
+    <string name="reconcile_fact_bank">Разница: %d ₸</string>
+    <string name="summary_total_fact">Всего (Факт): %s ₸</string>
+    <string name="summary_total_bank">Всего (Банк): %s ₸</string>
+    <string name="summary_cash">Наличка: %s ₸</string>
+    <string name="summary_net">ЧИСТЫЙ ОСТАТОК: %s ₸</string>
+    <string name="confirm_shift_title">Данные за день</string>
+    <string name="hint_extra">Доход</string>
+
+    <!-- Update Strings -->
+    <string name="update_available_title">Доступно обновление</string>
+    <string name="update_available_msg">Доступна новая версия приложения. Рекомендуем обновиться.</string>
+    <string name="btn_update">Обновить</string>
+    <string name="downloading_update">Загрузка обновления...</string>
+    <string name="download_started">Загрузка началась</string>
+    <string name="btn_check_update">Проверить обновление</string>
+    <string name="btn_test_crash">Тест Crashlytics</string>
+    <string name="ai_thinking">TaxiBot думает...</string>
+    <string name="ai_no_data">Нет данных для анализа</string>
+    <string name="ai_error_format">Ошибка формата ответа</string>
+    <string name="ai_initial_msg">Привет! Я изучил вашу активность. Нажмите на кнопки ниже, чтобы я провел детальный анализ.</string>
+
+    <!-- Logs -->
+    <string name="log_viewer_title">Системный Лог</string>
+    <string name="btn_view_logs">Просмотр Системных Логов</string>
+    <string name="btn_share_logs">Поделиться логами</string>
+    <string name="logs_cleared">Логи очищены</string>
+    <string name="logs_empty">Лог-файл пуст или не создан.</string>
+    <string name="log_loading">Загрузка логов...</string>
+</resources>

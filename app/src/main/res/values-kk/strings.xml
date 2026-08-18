@@ -1,0 +1,90 @@
+<resources>
+    <string name="app_name">TaxiGoal</string>
+    <string name="ai_assistant">AI Көмекші</string>
+    <string name="settings">Параметрлер</string>
+    <string name="open_calendar">КҮНТІЗБЕ</string>
+    <string name="goal_title_template">МАҚСАТ: %s ₸</string>
+    <string name="edit_goal">Мақсатты өңдеу</string>
+    <string name="saved_template">ЖИНАЛДЫ: %s ₸ (%d%%)</string>
+    <string name="remaining_template">ҚАЛДЫ: %s ₸</string>
+    <string name="day_income">🚕 ТӘУЛІКТІК ТАБЫС</string>
+    <string name="hint_card">Безнал (Карта)</string>
+    <string name="hint_cash_simple">Қолма-қол</string>
+    <string name="net_profit_template">Таза қалдық (күн): %s ₸</string>
+    <string name="developer_info">Әзірлеуші Габит Нұрмұханбетов</string>
+
+    <string name="btn_back">◀ АРТҚА</string>
+    <string name="tab_fact">🚕 ФАКТ</string>
+    <string name="tab_summary">📊 ЖИЫНТЫҚ</string>
+    <string name="mon">ДҮ</string>
+    <string name="tue">СЕ</string>
+    <string name="wed">СӘ</string>
+    <string name="thu">БЕ</string>
+    <string name="fri">ЖҰ</string>
+    <string name="sat">СЕ</string>
+    <string name="sun">ЖЕ</string>
+
+    <string name="settings_title">Параметрлер</string>
+    <string name="dark_theme">Қараңғы тақырып</string>
+    <string name="light_theme">Жарық тақырып</string>
+    <string name="language">Қолданба тілі</string>
+    <string name="gemini_api_key">Gemini API кілті</string>
+    <string name="hint_api_key">API кілтін енгізіңіз</string>
+    <string name="btn_verify_key">Кілтті тексеру</string>
+    <string name="key_valid">✅ Кілт қабылданды және сақталды!</string>
+    <string name="key_invalid">❌ Қате: Сервер кілтті қабылдамады</string>
+    <string name="key_verify_progress">Кілтті тексеру...</string>
+    <string name="key_empty">Тексеру алдында кілтті енгізіңіз</string>
+
+    <string name="ai_assistant_title">AI Көмекші ✨</string>
+    <string name="ai_bot_name">TaxiBot</string>
+    <string name="ai_status_analyzing">Деректеріңізді талдаудамын...</string>
+    <string name="btn_analyze_goal">🎯 МАҚСАТҚА ҚАШАН ЖЕТЕМІН?</string>
+    <string name="btn_analyze_fuel">⛽ ЖАНАР-ЖАҒАРМАЙ БОЙЫНША КЕҢЕС</string>
+
+    <string name="btn_add">Қосу</string>
+    <string name="btn_cancel">Болдырмау</string>
+    <string name="btn_save">Сақтау</string>
+
+    <!-- UI Compatibility Strings -->
+    <string name="import_pdf">📄 PDF ИМПОРТТАУ</string>
+    <string name="tab_bank">🏦 БАНК</string>
+    <string name="tab_compare">⚖️ САЛЫСТЫРУ</string>
+    <string name="summary_title">📊 ҚОРЫТЫНДЫ</string>
+    <string name="btn_approve_reconciliation">✅ МАҚҰЛДАУ</string>
+    <string name="undo">Болдырмау</string>
+    <string name="pdf_import_title">PDF импорттау</string>
+    <string name="btn_select_pdf">📁 PDF ТАҢДАУ</string>
+    <string name="parsed_data_title">МӘЛІМЕТТЕР:</string>
+    <string name="btn_approve_pdf">✅ МАҚҰЛДАУ</string>
+    <string name="month_total_fact">Жиынтық (Факт): %d ₸</string>
+    <string name="month_total_bank">Жиынтық (Банк): %d ₸</string>
+    <string name="reconcile_fact_bank">Айырмашылық: %d ₸</string>
+    <string name="summary_total_fact">Барлығы (Факт): %s ₸</string>
+    <string name="summary_total_bank">Барлығы (Банк): %s ₸</string>
+    <string name="summary_cash">Қолма-қол: %s ₸</string>
+    <string name="summary_net">ТАЗА ҚАЛДЫҚ: %s ₸</string>
+    <string name="confirm_shift_title">Күндік мәлімет</string>
+    <string name="hint_extra">Табыс</string>
+
+    <!-- Update Strings -->
+    <string name="update_available_title">Жаңарту қолжетімді</string>
+    <string name="update_available_msg">Қолданбаның жаңа нұсқасы қолжетімді. Жаңартуды ұсынамыз.</string>
+    <string name="btn_update">Жаңарту</string>
+    <string name="downloading_update">Жаңарту жүктелуде...</string>
+    <string name="download_started">Жүктеу басталды</string>
+    <string name="btn_check_update">Жаңартуды тексеру</string>
+    <string name="btn_test_crash">Crashlytics тестілеу</string>
+    <string name="ai_thinking">TaxiBot ойлануда...</string>
+    <string name="ai_no_data">Талдау үшін деректер жоқ</string>
+    <string name="ai_error_format">Жауап форматының қатесі</string>
+    <string name="ai_initial_msg">Сәлем! Мен сіздің белсенділігіңізді зерттедім. Төмендегі түймелерді басыңыз, мен егжей-тегжейлі талдау жасаймын.</string>
+
+    <!-- Logs -->
+    <string name="log_viewer_title">Жүйелік лог</string>
+    <string name="btn_view_logs">Жүйелік логтарды қарау</string>
+    <string name="btn_share_logs">Логтарды бөлісу</string>
+    <string name="logs_cleared">Логтар тазартылды</string>
+    <string name="logs_empty">Лог файлы бос немесе жасалмаған.</string>
+    <string name="log_loading">Логтар жүктелуде...</string>
+</resources>

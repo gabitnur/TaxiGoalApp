@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/btnBackFromAi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?attr/card_bg"
+            android:text="@string/btn_back"
+            android:textColor="?attr/text_main"
+            app:cornerRadius="12dp"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/ai_assistant_title"
+            android:textColor="?attr/text_main"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="?attr/card_bg"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:text="🤖"
+                android:textSize="30sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ai_bot_name"
+                    android:textColor="?attr/text_main"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ai_status_analyzing"
+                    android:textColor="?attr/accent_primary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvAiMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/card_bg"
+            android:padding="20dp"
+            android:text="@string/ai_initial_msg"
+            android:textColor="?attr/text_main"
+            android:textSize="16sp"
+            android:lineSpacingExtra="4dp" />
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/pbAiLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnAnalyzeGoal"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="?attr/accent_primary"
+            android:text="@string/btn_analyze_goal"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:cornerRadius="14dp" />
+
+        <Button
+            android:id="@+id/btnAnalyzeFuel"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="?attr/accent_primary"
+            android:text="@string/btn_analyze_fuel"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:cornerRadius="14dp" />
+    </LinearLayout>
+</LinearLayout>

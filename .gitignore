@@ -1,0 +1,22 @@
+# Gradle
+.gradle/
+build/
+caches/
+daemon/
+native/
+kotlin-profile/
+*.backup
+*.zip
+
+# IDEA
+.idea/
+*.iml
+
+# Android
+local.properties
+release-key.jks
+app/google-services.json
+
+# System
+.DS_Store
+Thumbs.db

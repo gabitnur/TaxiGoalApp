@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="app_bg" format="color" />
+    <attr name="card_bg" format="color" />
+    <attr name="accent_main" format="color" />
+    <attr name="accent_primary" format="color" />
+    <attr name="text_main" format="color" />
+    <attr name="text_on_accent" format="color" />
+    <attr name="card_stroke" format="color" />
+    <attr name="icon_tint" format="color" />
+</resources>

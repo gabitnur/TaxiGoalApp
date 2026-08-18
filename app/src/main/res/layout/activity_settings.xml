@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/btnBackFromSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/card_bg"
+                android:text="@string/btn_back"
+                android:textColor="?attr/text_main"
+                app:cornerRadius="12dp"
+                style="?android:attr/borderlessButtonStyle" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/settings_title"
+                android:textColor="?attr/text_main"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Тёмная Тема -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="?attr/card_bg"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tvThemeLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/dark_theme"
+                    android:textColor="?attr/text_main"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchDarkMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Дизайн приложения -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎨 ДИЗАЙН ПРИЛОЖЕНИЯ"
+            android:textColor="?attr/text_main"
+            android:textSize="12sp"
+            android:alpha="0.6"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="?attr/card_bg"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:scrollbars="none">
+
+                <RadioGroup
+                    android:id="@+id/rgThemes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <RadioButton android:id="@+id/rbTaxi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Taxi" android:textColor="?attr/text_main" android:layout_marginEnd="8dp" />
+                    <RadioButton android:id="@+id/rbOcean" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ocean" android:textColor="?attr/text_main" android:layout_marginEnd="8dp" />
+                    <RadioButton android:id="@+id/rbIce" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ice" android:textColor="?attr/text_main" android:layout_marginEnd="8dp" />
+                    <RadioButton android:id="@+id/rbMidnight" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Midnight" android:textColor="?attr/text_main" android:layout_marginEnd="8dp" />
+                    <RadioButton android:id="@+id/rbForest" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Forest" android:textColor="?attr/text_main" android:layout_marginEnd="8dp" />
+                    <RadioButton android:id="@+id/rbRoyal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Royal" android:textColor="?attr/text_main" />
+                </RadioGroup>
+            </HorizontalScrollView>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Настройка Цвета Шрифта -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎯 ЦВЕТ ЦИФР И АКЦЕНТОВ (ПАЛИТРА)"
+            android:textColor="?attr/text_main"
+            android:textSize="12sp"
+            android:alpha="0.6"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+            <View android:id="@+id/colorWhite" android:layout_width="44dp" android:layout_height="44dp" android:layout_margin="6dp" android:background="@color/picker_white" android:elevation="4dp" />
+            <View android:id="@+id/colorGold" android:layout_width="44dp" android:layout_height="44dp" android:layout_margin="6dp" android:background="@color/picker_gold" android:elevation="4dp" />
+            <View android:id="@+id/colorBlue" android:layout_width="44dp" android:layout_height="44dp" android:layout_margin="6dp" android:background="@color/picker_blue" android:elevation="4dp" />
+            <View android:id="@+id/colorGreen" android:layout_width="44dp" android:layout_height="44dp" android:layout_margin="6dp" android:background="@color/picker_green" android:elevation="4dp" />
+            <View android:id="@+id/colorPink" android:layout_width="44dp" android:layout_height="44dp" android:layout_margin="6dp" android:background="@color/picker_pink" android:elevation="4dp" />
+            <View android:id="@+id/colorReset" android:layout_width="44dp" android:layout_height="44dp" android:layout_margin="6dp" android:background="@android:color/darker_gray" android:elevation="4dp" />
+        </LinearLayout>
+
+        <!-- Alaman.app Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🚀 НАШИ ПАРТНЕРЫ"
+            android:textColor="?attr/text_main"
+            android:textSize="12sp"
+            android:alpha="0.6"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="?attr/card_bg"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/alaman_blue">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alaman.app 🇰🇿"
+                    android:textColor="@color/alaman_blue"
+                    android:textStyle="bold"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Telegram-приложение для водителей и администраторов таксопарков"
+                    android:textColor="?attr/text_main"
+                    android:alpha="0.7"
+                    android:layout_marginTop="4dp"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+
+                    <Button
+                        android:id="@+id/btnOpenAlamanApp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="ОТКРЫТЬ APP"
+                        android:textSize="10sp"
+                        app:backgroundTint="@color/alaman_blue"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginEnd="4dp" />
+
+                    <Button
+                        android:id="@+id/btnOpenAlamanNews"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="НОВОСТИ"
+                        android:textSize="10sp"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:textColor="@color/alaman_blue"
+                        app:strokeColor="@color/alaman_blue" />
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Gemini API Key -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🤖 GEMINI AI (КЛЮЧ)"
+            android:textColor="?attr/text_main"
+            android:textSize="12sp"
+            android:alpha="0.6"
+            android:layout_marginBottom="8dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="?attr/card_bg"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/etGeminiApiKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="@string/hint_api_key"
+                    android:textColor="?attr/text_main"
+                    android:textColorHint="?attr/text_main"
+                    android:inputType="textPassword"
+                    android:background="@null" />
+
+                <Button
+                    android:id="@+id/btnVerifyApiKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="@string/btn_verify_key"
+                    app:backgroundTint="?attr/accent_primary"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Язык -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="?attr/card_bg"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/language"
+                    android:textColor="?attr/text_main"
+                    android:textSize="16sp" />
+                <Button
+                    android:id="@+id/btnSelectLanguage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="?attr/app_bg"
+                    android:text="Русский"
+                    android:textColor="?attr/text_main" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnViewLogs"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/btn_view_logs"
+            app:backgroundTint="?attr/card_bg"
+            android:textColor="?attr/text_main"
+            app:cornerRadius="12dp" />
+
+        <TextView
+            android:id="@+id/tvAppVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Версия: 1.0.16"
+            android:textColor="?attr/text_main"
+            android:alpha="0.4"
+            android:layout_marginTop="24dp" />
+
+        <Button
+            android:id="@+id/btnSignOut"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="40dp"
+            android:text="Выйти из аккаунта"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#FF3B30"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+</ScrollView>

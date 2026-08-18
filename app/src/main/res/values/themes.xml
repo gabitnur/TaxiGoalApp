@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Базовая тема -->
+    <style name="Base.Theme.TaxiGoal" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">?attr/app_bg</item>
+        <item name="colorSurface">?attr/card_bg</item>
+    </style>
+
+    <!-- 1. Классик Такси (Black & Gold) -->
+    <style name="Theme.TaxiGoal.Taxi" parent="Base.Theme.TaxiGoal">
+        <item name="app_bg">#000000</item>
+        <item name="card_bg">#141414</item>
+        <item name="accent_main">@color/theme_taxi_accent</item>
+        <item name="accent_primary">@color/theme_taxi_accent</item>
+        <item name="text_main">#FFFFFF</item>
+        <item name="text_on_accent">#000000</item>
+        <item name="card_stroke">#33FFFFFF</item>
+        <item name="icon_tint">#FFFFFF</item>
+    </style>
+
+    <!-- 2. Океан (Deep Blue) -->
+    <style name="Theme.TaxiGoal.Ocean" parent="Base.Theme.TaxiGoal">
+        <item name="app_bg">#0D1B2A</item>
+        <item name="card_bg">#1B263B</item>
+        <item name="accent_main">#4CC9F0</item>
+        <item name="accent_primary">#4CC9F0</item>
+        <item name="text_main">#E0E1DD</item>
+        <item name="text_on_accent">#000000</item>
+        <item name="card_stroke">#334CC9F0</item>
+        <item name="icon_tint">#E0E1DD</item>
+    </style>
+
+    <!-- 3. Светлый Лёд (Lavender Light) -->
+    <style name="Theme.TaxiGoal.Ice" parent="Base.Theme.TaxiGoal">
+        <item name="app_bg">#F8F9FA</item>
+        <item name="card_bg">#FFFFFF</item>
+        <item name="accent_main">#4361EE</item>
+        <item name="accent_primary">#4361EE</item>
+        <item name="text_main">#1B263B</item>
+        <item name="text_on_accent">#FFFFFF</item>
+        <item name="card_stroke">#E0E0E0</item>
+        <item name="icon_tint">#1B263B</item>
+    </style>
+
+    <!-- 4. Полночь (Teal Midnight) -->
+    <style name="Theme.TaxiGoal.Midnight" parent="Base.Theme.TaxiGoal">
+        <item name="app_bg">#050505</item>
+        <item name="card_bg">#121212</item>
+        <item name="accent_main">#00F5D4</item>
+        <item name="accent_primary">#00F5D4</item>
+        <item name="text_main">#FFFFFF</item>
+        <item name="text_on_accent">#000000</item>
+        <item name="card_stroke">#2200F5D4</item>
+        <item name="icon_tint">#FFFFFF</item>
+    </style>
+
+    <!-- 5. Лес (Nature Sage) -->
+    <style name="Theme.TaxiGoal.Forest" parent="Base.Theme.TaxiGoal">
+        <item name="app_bg">#F1F2E9</item>
+        <item name="card_bg">#E2E4D8</item>
+        <item name="accent_main">#2D6A4F</item>
+        <item name="accent_primary">#2D6A4F</item>
+        <item name="text_main">#1B4332</item>
+        <item name="text_on_accent">#FFFFFF</item>
+        <item name="card_stroke">#2D6A4F</item>
+        <item name="icon_tint">#1B4332</item>
+    </style>
+
+    <!-- 6. Пурпур (Deep Plum) -->
+    <style name="Theme.TaxiGoal.Royal" parent="Base.Theme.TaxiGoal">
+        <item name="app_bg">#1A0B2E</item>
+        <item name="card_bg">#24143D</item>
+        <item name="accent_main">#F72585</item>
+        <item name="accent_primary">#F72585</item>
+        <item name="text_main">#E0B1CB</item>
+        <item name="text_on_accent">#FFFFFF</item>
+        <item name="card_stroke">#44F72585</item>
+        <item name="icon_tint">#E0B1CB</item>
+    </style>
+
+    <!-- Совместимость со старым кодом -->
+    <style name="Theme.TaxiGoal" parent="Theme.TaxiGoal.Taxi" />
+    <style name="Theme.TaxiGoal.Gold" parent="Theme.TaxiGoal.Taxi" />
+    <style name="Theme.TaxiGoal.Neon" parent="Theme.TaxiGoal.Midnight" />
+    <style name="Theme.TaxiGoal.Cyber" parent="Theme.TaxiGoal.Ocean" />
+</resources>

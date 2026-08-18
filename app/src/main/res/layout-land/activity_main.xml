@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- Left side: Goal and Progress -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingEnd="8dp">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="?attr/card_bg"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/tvGoalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="298,000 ₸"
+                    android:textColor="?attr/accent_main"
+                    android:textSize="28sp"
+                    android:fontFamily="sans-serif-light" />
+
+                <ProgressBar
+                    android:id="@+id/progressBarGoal"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="12dp"
+                    android:progressTint="?attr/accent_main" />
+
+                <TextView
+                    android:id="@+id/tvSaved"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="ЖИНАЛДЫ: 0 ₸"
+                    android:textColor="?attr/text_main"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvRemaining"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ҚАЛДЫ: 0 ₸"
+                    android:textColor="?attr/text_main"
+                    android:alpha="0.6"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:cardBackgroundColor="?attr/accent_main"
+            app:cardCornerRadius="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="12dp">
+                <TextView
+                    android:id="@+id/tvTodayFact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 ₸"
+                    android:textColor="#000000"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnConfirmToGoal"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:backgroundTint="?attr/card_bg"
+            android:text="💰 В ЦЕЛЬ"
+            android:textColor="?attr/accent_main"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:strokeColor="?attr/accent_main"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
+
+    <!-- Right side: Inputs -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.2"
+        android:orientation="vertical"
+        android:paddingStart="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <Button
+                android:id="@+id/btnOcrImport"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="?attr/card_bg"
+                android:text="📷 OCR"
+                android:textSize="12sp"
+                android:textColor="?attr/accent_main"
+                app:cornerRadius="12dp" />
+
+            <ImageButton
+                android:id="@+id/btnSettings"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:backgroundTint="?attr/card_bg"
+                android:src="@android:drawable/ic_menu_preferences"
+                app:tint="?attr/text_main" />
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:cardBackgroundColor="?attr/card_bg"
+            app:cardCornerRadius="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/etCardInput"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:hint="@string/hint_card"
+                        android:inputType="number"
+                        android:textSize="14sp"
+                        android:textColor="?attr/text_main" />
+                    <EditText
+                        android:id="@+id/etCashInput"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:hint="@string/hint_cash_simple"
+                        android:inputType="number"
+                        android:textSize="14sp"
+                        android:textColor="?attr/text_main" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+                    <Button android:id="@+id/btnAdd1000" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:text="+1000" android:textSize="10sp" android:backgroundTint="?attr/app_bg" android:textColor="?attr/text_main" />
+                    <Button android:id="@+id/btnAdd2000" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:text="+2000" android:textSize="10sp" android:backgroundTint="?attr/app_bg" android:textColor="?attr/text_main" />
+                    <Button android:id="@+id/btnAdd5000" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:text="+5000" android:textSize="10sp" android:backgroundTint="?attr/app_bg" android:textColor="?attr/text_main" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnAddCash"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:backgroundTint="?attr/accent_main"
+                    android:text="ДОБАВИТЬ"
+                    android:textColor="#000000"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabVoiceAi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        app:fabSize="mini"
+        android:backgroundTint="?attr/accent_main"
+        android:src="@android:drawable/ic_btn_speak_now"
+        app:tint="#000000" />
+
+    <!-- Hidden views needed for code compatibility -->
+    <View android:id="@+id/btnAiAssistant" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+    <View android:id="@+id/btnAiChat" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+    <View android:id="@+id/btnOpenCalendar" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+    <View android:id="@+id/btnEditGoal" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+    <View android:id="@+id/btnEditAccumulated" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+
+</LinearLayout>

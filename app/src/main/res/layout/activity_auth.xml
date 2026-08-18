@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TaxiGoal 🚖"
+            android:textColor="?attr/accent_main"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="48dp" />
+
+        <!-- Google Login -->
+        <Button
+            android:id="@+id/btnGoogleSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="?attr/card_bg"
+            android:text="Войти через Google"
+            android:textColor="?attr/accent_main"
+            app:cornerRadius="12dp"
+            app:icon="@android:drawable/ic_menu_compass"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/accent_main" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ИЛИ"
+            android:textColor="?attr/text_main"
+            android:alpha="0.4"
+            android:textSize="12sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Email Login Fields -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="?attr/card_bg"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="16dp"
+            android:textColor="?attr/text_main"
+            android:textColorHint="?attr/text_main"
+            android:alpha="0.8"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="?attr/card_bg"
+            android:hint="Пароль"
+            android:inputType="textPassword"
+            android:paddingHorizontal="16dp"
+            android:textColor="?attr/text_main"
+            android:textColorHint="?attr/text_main"
+            android:alpha="0.8"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="?attr/accent_main"
+                android:text="Вход"
+                android:textColor="#000000"
+                app:cornerRadius="12dp" />
+
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:backgroundTint="?attr/card_bg"
+                android:text="Регистрация"
+                android:textColor="?attr/accent_main"
+                app:cornerRadius="12dp"
+                style="?android:attr/borderlessButtonStyle" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnAnonymous"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="@android:color/transparent"
+            android:text="ПРОДОЛЖИТЬ БЕЗ ВХОДА"
+            android:textColor="?attr/text_main"
+            android:alpha="0.6"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <ProgressBar
+            android:id="@+id/pbAuth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>
