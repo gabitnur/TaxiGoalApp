@@ -16,8 +16,8 @@ android {
         applicationId = "com.example.taxigoal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 21
-        versionName = "1.0.21"
+        versionCode = 19
+        versionName = "1.0.19"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,7 +38,11 @@ android {
 
     applicationVariants.all {
         outputs.map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }.forEach { output ->
-            output.outputFileName = "update.apk"
+            if (buildType.name == "release") {
+                output.outputFileName = "update.apk"
+            } else {
+                output.outputFileName = "app-${buildType.name}.apk"
+            }
         }
     }
 
