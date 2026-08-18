@@ -5,6 +5,7 @@ caches/
 daemon/
 native/
 kotlin-profile/
+wrapper/dists/
 *.backup
 *.zip
 
