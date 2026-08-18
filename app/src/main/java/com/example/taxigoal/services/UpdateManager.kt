@@ -39,6 +39,11 @@ object UpdateManager {
             connection.requestMethod = "GET"
             
             val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                AppLogger.info("Update", "HTTP_404", "Version JSON not found (treating as no update)")
+                return@withContext Result.success(null)
+            }
+
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }?.take(200)
                 AppLogger.error("Update", "HTTP_ERROR", "Code: $responseCode | Msg: $errorBody")
