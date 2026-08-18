@@ -22,7 +22,11 @@ data class DiagnosticResult(
 class GeminiDiagnosticRepository(private val context: Context) {
     
     private val TEST_MODELS = listOf(
-        com.example.taxigoal.GeminiManager.WORKING_MODEL_NAME
+        com.example.taxigoal.GeminiManager.WORKING_MODEL_NAME,
+        "gemini-2.0-flash-exp",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-8b",
+        "gemini-1.5-pro"
     )
 
     suspend fun testCombination(keyId: String, apiKey: String, modelName: String): DiagnosticResult {

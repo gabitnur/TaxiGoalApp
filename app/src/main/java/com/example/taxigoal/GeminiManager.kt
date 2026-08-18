@@ -19,7 +19,12 @@ object GeminiManager {
         return GenerativeModel(modelName = WORKING_MODEL_NAME, apiKey = apiKey)
     }
 
-    fun getCandidateModels() = listOf(WORKING_MODEL_NAME)
+    fun getCandidateModels() = listOf(
+        WORKING_MODEL_NAME,
+        "gemini-2.0-flash-exp",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-8b"
+    )
 
     fun saveWorkingModel(context: Context, modelName: String) {
         val prefs = context.getSharedPreferences("TaxiGoalPrefs", Context.MODE_PRIVATE)
