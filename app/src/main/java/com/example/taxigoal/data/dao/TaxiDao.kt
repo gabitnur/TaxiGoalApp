@@ -19,8 +19,8 @@ interface TaxiDao {
     @Delete
     suspend fun deleteShift(shift: Shift)
 
-    @Query("SELECT * FROM shifts")
-    fun getAllShiftsSync(): List<Shift>
+    @Query("SELECT * FROM shifts WHERE userId = :userId ORDER BY date DESC")
+    suspend fun getAllShiftsSync(userId: String): List<Shift>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllShifts(list: List<Shift>)
@@ -32,6 +32,9 @@ interface TaxiDao {
     @Query("SELECT * FROM goals WHERE userId = :userId AND isActive = 1 LIMIT 1")
     fun getActiveGoalFlow(userId: String): Flow<Goal?>
 
+    @Query("SELECT * FROM goals WHERE userId = :userId AND isActive = 1 LIMIT 1")
+    suspend fun getActiveGoalSync(userId: String): Goal?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGoal(goal: Goal)
 
@@ -41,8 +44,8 @@ interface TaxiDao {
     @Delete
     suspend fun deleteGoal(goal: Goal)
 
-    @Query("SELECT * FROM goals")
-    fun getAllGoalsSync(): List<Goal>
+    @Query("SELECT * FROM goals WHERE userId = :userId ORDER BY createdDate DESC")
+    suspend fun getAllGoalsSync(userId: String): List<Goal>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllGoals(list: List<Goal>)
@@ -54,8 +57,8 @@ interface TaxiDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: FinancialTransaction)
 
-    @Query("SELECT * FROM financial_transactions")
-    fun getAllTransactionsSync(): List<FinancialTransaction>
+    @Query("SELECT * FROM financial_transactions WHERE userId = :userId ORDER BY date DESC")
+    suspend fun getAllTransactionsSync(userId: String): List<FinancialTransaction>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllTransactions(list: List<FinancialTransaction>)

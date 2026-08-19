@@ -48,10 +48,10 @@ jobs:
       - name: Generate version.json
         run: |
           echo '{
-            "versionCode": 24,
-            "versionName": "1.0.24",
+            "versionCode": 25,
+            "versionName": "1.0.25",
             "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/${{ github.ref_name }}/update.apk",
-            "releaseNotes": ["Автоматическое обновление v1.0.24", "Исправление системы обновления", "Обновление Gemini API (модель Flash Latest)"]
+            "releaseNotes": ["Автоматическое обновление v1.0.25", "Интеграция ИИ с базой данных Room", "Персонализированный финансовый анализ"]
           }' > version.json
 
       - name: Commit version.json to main branch

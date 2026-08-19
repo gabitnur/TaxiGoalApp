@@ -10,10 +10,12 @@ class TaxiRepository(private val taxiDao: TaxiDao) {
     fun getShiftsInRange(userId: String, start: Long, end: Long): Flow<List<Shift>> = taxiDao.getShiftsInRange(userId, start, end)
     suspend fun insertShift(shift: Shift) = taxiDao.insertShift(shift)
     suspend fun deleteShift(shift: Shift) = taxiDao.deleteShift(shift)
+    suspend fun getAllShiftsSync(userId: String) = taxiDao.getAllShiftsSync(userId)
 
     // Goals
     fun getAllGoals(userId: String): Flow<List<Goal>> = taxiDao.getAllGoals(userId)
     fun getActiveGoalFlow(userId: String): Flow<Goal?> = taxiDao.getActiveGoalFlow(userId)
+    suspend fun getActiveGoalSync(userId: String) = taxiDao.getActiveGoalSync(userId)
     suspend fun insertGoal(goal: Goal) = taxiDao.insertGoal(goal)
     suspend fun updateGoal(goal: Goal) = taxiDao.updateGoal(goal)
     suspend fun deleteGoal(goal: Goal) = taxiDao.deleteGoal(goal)

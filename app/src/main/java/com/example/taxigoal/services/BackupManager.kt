@@ -62,9 +62,9 @@ object BackupManager {
 
             // Чтение реальных данных пользователя из Room Database
             val db = TaxiDatabase.getDatabase(context)
-            val userShifts = db.taxiDao().getAllShiftsSync()
-            val userTransactions = db.taxiDao().getAllTransactionsSync()
-            val userGoals = db.taxiDao().getAllGoalsSync()
+            val userShifts = db.taxiDao().getAllShiftsSync(uid)
+            val userTransactions = db.taxiDao().getAllTransactionsSync(uid)
+            val userGoals = db.taxiDao().getAllGoalsSync(uid)
 
             val payload = UserBackupPayload(
                 uid = uid,

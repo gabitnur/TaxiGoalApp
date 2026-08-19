@@ -111,8 +111,8 @@ fun AIChatScreen(navController: NavController, mainViewModel: MainViewModel) {
                 .padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            SuggestionChip(onClick = { chatViewModel.sendMessage("Статистика за месяц") }, label = { Text("Статистика за месяц") })
-            SuggestionChip(onClick = { chatViewModel.sendMessage("Прогресс по цели") }, label = { Text("Прогресс по цели") })
+            SuggestionChip(onClick = { chatViewModel.sendMessage("Проанализируй мою статистику за последний месяц и дай краткий итог.") }, label = { Text("Статистика за месяц") })
+            SuggestionChip(onClick = { chatViewModel.sendMessage("Расскажи о моем прогрессе по цели: сколько осталось и когда я ее достигну?") }, label = { Text("Прогресс по цели") })
         }
 
         // --- Input Area ---
