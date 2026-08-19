@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.taxigoal.BuildConfig
 import com.example.taxigoal.ui.navigation.Screen
 import com.example.taxigoal.ui.theme.BrandPurple
 import com.example.taxigoal.utils.AppLogger
@@ -125,7 +126,7 @@ fun SettingsScreen(navController: NavController, viewModel: MainViewModel) {
         SettingsSection(title = "Приложение") {
             SettingsItem("Лог ошибок", Icons.Default.BugReport) { navController.navigate(Screen.ErrorLog.route) }
             SettingsItem("Обновление", Icons.Default.SystemUpdate) { navController.navigate(Screen.AppUpdate.route) }
-            SettingsItem("О приложении", Icons.Default.Info, value = "1.0.16") { navController.navigate(Screen.About.route) }
+            SettingsItem("О приложении", Icons.Default.Info, value = BuildConfig.VERSION_NAME) { navController.navigate(Screen.About.route) }
         }
 
         Spacer(modifier = Modifier.height(32.dp))

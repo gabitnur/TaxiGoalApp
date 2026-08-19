@@ -60,10 +60,7 @@ class SettingsActivity : BaseActivity() {
         }
 
         // Set Version Text
-        try {
-            val pInfo = packageManager.getPackageInfo(packageName, 0)
-            findViewById<TextView>(R.id.tvAppVersion).text = "Версия: ${pInfo.versionName}"
-        } catch (e: Exception) {}
+        findViewById<TextView>(R.id.tvAppVersion).text = "Версия: ${BuildConfig.VERSION_NAME}"
 
         // 4. Gemini Key + Verification (Restore robust logic)
         val etApiKey = findViewById<EditText>(R.id.etGeminiApiKey)

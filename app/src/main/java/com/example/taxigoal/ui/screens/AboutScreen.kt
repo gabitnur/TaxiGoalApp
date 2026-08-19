@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.taxigoal.BuildConfig
 import com.example.taxigoal.ui.theme.AppBackground
 import com.example.taxigoal.utils.AppLogger
 
@@ -49,7 +50,7 @@ fun AboutScreen(navController: NavController) {
             Text(text = "💰", fontSize = 80.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "МОЙ ДОХОД", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
-            Text(text = "Версия 1.0.16", color = Color.Gray)
+            Text(text = "Версия ${BuildConfig.VERSION_NAME}", color = Color.Gray)
             
             Spacer(modifier = Modifier.height(32.dp))
             

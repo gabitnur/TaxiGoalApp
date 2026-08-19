@@ -35,9 +35,8 @@ object UpdateManager {
 
     suspend fun checkUpdate(context: Context): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         try {
-            // 1. URL с анти-кэшем
             val urlWithCacheBuster = "$BASE_URL?t=${System.currentTimeMillis()}"
-            Log.d(TAG, "Checking update from: $urlWithCacheBuster")
+            Log.d(TAG, "UpdateManager: Checking update from: $urlWithCacheBuster")
             
             val connection = URL(urlWithCacheBuster).openConnection() as HttpURLConnection
             connection.connectTimeout = 15000
@@ -46,19 +45,22 @@ object UpdateManager {
             
             val responseCode = connection.responseCode
             if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-                Log.d(TAG, "version.json not found (404), falling back to GitHub API")
-                return@withContext checkUpdateFromGitHubApi(context)
+                Log.d(TAG, "UpdateManager: version.json not found (404), falling back to GitHub API")
+                return@withContext checkUpdateFromGitHubApi()
             }
 
             if (responseCode != HttpURLConnection.HTTP_OK) {
-                Log.w(TAG, "HTTP Error: $responseCode")
-                throw Exception("HTTP $responseCode")
+                Log.w(TAG, "UpdateManager: HTTP Error: $responseCode")
+                throw Exception("HTTP Error $responseCode")
             }
 
             val body = connection.inputStream.bufferedReader().use { it.readText() }.trim()
-            Log.d(TAG, "Received JSON: $body")
+            Log.d(TAG, "UpdateManager: Received JSON: $body")
             
-            // 2. Безопасный парсинг JSON через JSONObject
+            if (body.isEmpty() || !body.startsWith("{")) {
+                throw Exception("Invalid JSON response from server")
+            }
+
             val json = JSONObject(body)
             val remoteVersionCode = json.optInt("versionCode", 0)
             val remoteVersionName = json.optString("versionName", "Unknown")
@@ -72,6 +74,10 @@ object UpdateManager {
                 }
             }
 
+            if (remoteVersionCode == 0 || remoteApkUrl.isEmpty()) {
+                throw Exception("Missing required fields in version.json")
+            }
+
             val info = UpdateInfo(
                 versionCode = remoteVersionCode,
                 versionName = remoteVersionName,
@@ -79,12 +85,12 @@ object UpdateManager {
                 releaseNotes = notes
             )
             
-            // 3. Сравнение версий по versionCode
             compareAndReturn(info)
         } catch (e: Exception) {
-            Log.e(TAG, "Update check failed: ${e.message}")
+            Log.e(TAG, "UpdateManager: checkUpdate failed: ${e.message}")
+            // Fallback to GitHub API on any error
             try {
-                checkUpdateFromGitHubApi(context)
+                checkUpdateFromGitHubApi()
             } catch (ex: Exception) {
                 AppLogger.error("Update", "CHECK_FAILED", e.message ?: "Unknown error")
                 Result.failure(e)
@@ -92,13 +98,17 @@ object UpdateManager {
         }
     }
 
-    private suspend fun checkUpdateFromGitHubApi(context: Context): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
+    private suspend fun checkUpdateFromGitHubApi(): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         try {
+            Log.d(TAG, "UpdateManager: Falling back to GitHub Releases API")
             val connection = URL(GITHUB_RELEASES_API).openConnection() as HttpURLConnection
             connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
             connection.setRequestProperty("User-Agent", "TaxiGoalApp")
+            connection.connectTimeout = 15000
+            connection.readTimeout = 15000
             
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                Log.w(TAG, "UpdateManager: GitHub API returned ${connection.responseCode}")
                 return@withContext Result.success(null)
             }
 
@@ -119,9 +129,13 @@ object UpdateManager {
                 }
             }
 
-            if (apkUrl.isEmpty()) return@withContext Result.success(null)
+            if (apkUrl.isEmpty()) {
+                Log.d(TAG, "UpdateManager: No update.apk found in GitHub assets")
+                return@withContext Result.success(null)
+            }
 
-            val estimatedVersionCode = tagName.replace(".", "").toIntOrNull() ?: 0
+            // Estimate versionCode from tag name (e.g., 1.0.22 -> 22)
+            val estimatedVersionCode = tagName.split(".").lastOrNull()?.toIntOrNull() ?: 0
             
             val info = UpdateInfo(
                 versionCode = estimatedVersionCode,
@@ -132,25 +146,31 @@ object UpdateManager {
             
             compareAndReturn(info)
         } catch (e: Exception) {
-            Log.e(TAG, "GitHub API fallback failed: ${e.message}")
+            Log.e(TAG, "UpdateManager: GitHub API fallback failed: ${e.message}")
             Result.success(null)
         }
     }
 
     private fun compareAndReturn(info: UpdateInfo): Result<UpdateInfo?> {
         val currentVersionCode = BuildConfig.VERSION_CODE
-        Log.d(TAG, "Comparing: Remote VC=$${info.versionCode}, Local VC=$currentVersionCode")
+        Log.d(TAG, "UpdateManager: currentVersionCode=$currentVersionCode")
+        Log.d(TAG, "UpdateManager: remoteVersionCode=${info.versionCode}")
+        
+        val updateAvailable = info.versionCode > currentVersionCode
+        Log.d(TAG, "UpdateManager: updateAvailable=$updateAvailable")
 
-        return if (info.versionCode > currentVersionCode) {
-            Log.i(TAG, "Update AVAILABLE: v${info.versionName}")
+        return if (updateAvailable) {
+            Log.i(TAG, "UpdateManager: Update AVAILABLE: v${info.versionName}")
+            AppLogger.info("Update", "AVAILABLE", "New version: ${info.versionName}")
             Result.success(info)
         } else {
-            Log.d(TAG, "App is up to date")
+            Log.d(TAG, "UpdateManager: App is up to date")
             Result.success(null)
         }
     }
 
     fun startDownload(context: Context, apkUrl: String) {
+        Log.d(TAG, "UpdateManager: Starting download: $apkUrl")
         AppLogger.info("Update", "DOWNLOAD_INIT", "Starting download: $apkUrl")
         val destination = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "update.apk")
         if (destination.exists()) destination.delete()
@@ -164,11 +184,13 @@ object UpdateManager {
 
             val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val downloadId = dm.enqueue(request)
+            Log.d(TAG, "UpdateManager: downloadId=$downloadId")
 
             val onComplete = object : BroadcastReceiver() {
                 override fun onReceive(ctx: Context, intent: Intent) {
                     val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
                     if (id == downloadId) {
+                        Log.d(TAG, "UpdateManager: downloadStatus=SUCCESSFUL")
                         AppLogger.info("Update", "DOWNLOAD_COMPLETE", "APK downloaded successfully")
                         installApk(ctx, destination)
                         ctx.unregisterReceiver(this)
@@ -183,6 +205,7 @@ object UpdateManager {
                 context.registerReceiver(onComplete, filter)
             }
         } catch (e: Exception) {
+            Log.e(TAG, "UpdateManager: Download failed: ${e.message}")
             AppLogger.error("Update", "DOWNLOAD_ERROR", AppLogger.getErrorDetails(e))
         }
     }
@@ -190,13 +213,18 @@ object UpdateManager {
     private fun installApk(context: Context, file: File) {
         try {
             val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            Log.d(TAG, "UpdateManager: apkUri=$uri")
+            
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, "application/vnd.android.package-archive")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
+            Log.d(TAG, "UpdateManager: Launching Package Installer")
+            AppLogger.info("Update", "INSTALL_LAUNCH", "Opening Package Installer")
             context.startActivity(intent)
         } catch (e: Exception) {
+            Log.e(TAG, "UpdateManager: Installation failed: ${e.message}")
             AppLogger.error("Update", "INSTALL_FAILED", AppLogger.getErrorDetails(e))
         }
     }

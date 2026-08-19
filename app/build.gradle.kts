@@ -18,8 +18,8 @@ android {
         applicationId = "com.example.taxigoal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 23
-        versionName = "1.0.23"
+        versionCode = 22
+        versionName = "1.0.22"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -30,7 +30,7 @@ android {
             properties.load(localPropertiesFile.inputStream())
         }
         val geminiKey = properties.getProperty("GEMINI_API_KEY") ?: System.getenv("GEMINI_API_KEY") ?: ""
-        buildConfigField("STRING", "GEMINI_API_KEY", "\"$geminiKey\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
     }
 
     lint {
@@ -41,9 +41,9 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("my-release-key.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+            storePassword = project.findProperty("KEYSTORE_PASSWORD")?.toString() ?: System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = project.findProperty("KEY_ALIAS")?.toString() ?: System.getenv("KEY_ALIAS")
+            keyPassword = project.findProperty("KEY_PASSWORD")?.toString() ?: System.getenv("KEY_PASSWORD")
         }
     }
 
