@@ -28,6 +28,25 @@ export const geminiChat = functions.https.onCall({
     }
 });
 
+/**
+ * Endpoint for verifying Gemini model availability.
+ */
+export const verifyGeminiModel = functions.https.onCall({
+    secrets: ["GEMINI_API_KEY"],
+    region: "us-central1"
+}, async (request) => {
+    if (!request.auth) {
+        throw new functions.https.HttpsError("unauthenticated", "Auth required");
+    }
+
+    try {
+        const result = await gemini.testConnectivity();
+        return { success: true, result };
+    } catch (error: any) {
+        return { success: false, message: error.message };
+    }
+});
+
 export const submitDiagnosticReport = functions.https.onCall({
     secrets: ["GITHUB_TOKEN"],
     region: "us-central1"
