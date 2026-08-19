@@ -28,8 +28,6 @@
     <string name="dark_theme">Тёмная тема</string>
     <string name="light_theme">Светлая тема</string>
     <string name="language">Язык приложения</string>
-    <string name="gemini_api_key">Gemini API Key</string>
-    <string name="hint_api_key">Введите ваш API ключ</string>
     <string name="btn_verify_key">Проверить ключ</string>
     <string name="key_valid">✅ Ключ валиден и сохранен!</string>
     <string name="key_invalid">❌ Ошибка: Ключ не принят сервером</string>

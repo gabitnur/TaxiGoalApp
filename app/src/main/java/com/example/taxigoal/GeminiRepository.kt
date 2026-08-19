@@ -2,83 +2,61 @@ package com.example.taxigoal
 
 import android.content.Context
 import com.example.taxigoal.utils.AppLogger
-import com.google.ai.client.generativeai.GenerativeModel
-import kotlinx.coroutines.delay
-import java.net.HttpURLConnection
+import com.google.firebase.functions.FirebaseFunctions
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class GeminiRepository(private val context: Context) {
 
-    suspend fun sendPromptWithRetry(prompt: String, retries: Int = 3): Result<String> {
-        var lastException: Exception? = null
-        var delayMs = 1000L
+    private val functions = FirebaseFunctions.getInstance("us-central1")
 
-        repeat(retries) { attempt ->
-            try {
-                val apiKey = GeminiManager.getEffectiveApiKey(context)
-                val modelName = GeminiManager.WORKING_MODEL_NAME
-                
-                AppLogger.info("Gemini", "REQUEST_START", "Model: $modelName | Attempt: ${attempt + 1}")
-                AppLogger.info("Gemini", "API_KEY_CONFIGURED", "Status: ${apiKey.isNotBlank()}")
-                
-                val model = GenerativeModel(
-                    modelName = modelName,
-                    apiKey = apiKey
-                )
-                
-                AppLogger.info("Gemini", "GENERATING_CONTENT", "Prompt length: ${prompt.length}")
-                val response = model.generateContent(prompt)
-                val text = response.text
-                
-                if (!text.isNullOrBlank()) {
-                    AppLogger.info("Gemini", "REQUEST_SUCCESS", "Response length: ${text.length}")
-                    return Result.success(text)
-                } else {
-                    throw Exception("AI returned empty text")
-                }
-            } catch (e: Exception) {
-                lastException = e
-                val errorMsg = e.message ?: ""
-                
-                // Handle 503 High Demand or 429 Rate Limit
-                if (errorMsg.contains("503") || errorMsg.contains("demand", true) || errorMsg.contains("429")) {
-                    AppLogger.warn("Gemini", "REQUEST_RETRY", "Server busy, retrying in ${delayMs}ms...")
-                    delay(delayMs)
-                    delayMs *= 2 // Exponential backoff
-                } else {
-                    // Critical errors (401, 403, etc.) - don't retry
-                    val errorMessage = when {
-                        errorMsg.contains("401") -> "Ошибка авторизации: проверьте API ключ."
-                        errorMsg.contains("403") -> "Доступ запрещен: проверьте лимиты."
-                        else -> "Ошибка AI: $errorMsg"
-                    }
-                    AppLogger.error("Gemini", "REQUEST_FAILED", errorMessage)
-                    return Result.failure(Exception(errorMessage))
-                }
-            }
-        }
+    suspend fun sendPromptWithRetry(prompt: String, safeContext: String = "", retries: Int = 3): Result<String> {
+        var lastException: Exception? = null
         
-        AppLogger.error("Gemini", "RETRY_EXHAUSTED", "Failed after $retries attempts")
-        return Result.failure(lastException ?: Exception("Unknown error"))
-    }
-
-    suspend fun sendMessageWithRetry(chat: com.google.ai.client.generativeai.Chat, text: String, retries: Int = 3): Result<String> {
-        var delayMs = 1000L
-        var lastException: Exception? = null
-
         repeat(retries) { attempt ->
             try {
-                val response = chat.sendMessage(text)
-                return Result.success(response.text ?: "AI не вернул текст.")
+                AppLogger.info("Gemini", "REQUEST_START", "Backend: FIREBASE_FUNCTION | Attempt: ${attempt + 1}")
+                
+                val data = hashMapOf(
+                    "message" to prompt,
+                    "safeContext" to safeContext,
+                    "requestId" to UUID.randomUUID().toString()
+                )
+
+                // Call the Firebase Function instead of direct Gemini SDK
+                val result = functions
+                    .getHttpsCallable("geminiChat")
+                    .call(data)
+                    .await()
+
+                val responseData = result.data as? Map<*, *>
+                val success = responseData?.get("success") as? Boolean ?: false
+                
+                if (success) {
+                    val reply = responseData?.get("reply") as? String
+                    if (!reply.isNullOrBlank()) {
+                        AppLogger.info("Gemini", "REQUEST_SUCCESS", "Reply length: ${reply.length}")
+                        return Result.success(reply)
+                    }
+                }
+                
+                val errorType = responseData?.get("errorType") as? String ?: "UNKNOWN_ERROR"
+                throw Exception(errorType)
+
             } catch (e: Exception) {
                 lastException = e
-                if (e.message?.contains("503") == true || e.message?.contains("demand", true) == true) {
-                    delay(delayMs)
-                    delayMs *= 2
+                val msg = e.message ?: ""
+                
+                if (msg.contains("TEMPORARILY_UNAVAILABLE") || msg.contains("RATE_LIMITED") || msg.contains("503") || msg.contains("429")) {
+                    AppLogger.warn("Gemini", "REQUEST_RETRY", "Server busy: $msg")
+                    kotlinx.coroutines.delay(1000L * (attempt + 1))
                 } else {
+                    AppLogger.error("Gemini", "REQUEST_FAILED", "Fatal error: $msg")
                     return Result.failure(e)
                 }
             }
         }
-        return Result.failure(lastException ?: Exception("Ошибка чата"))
+        
+        return Result.failure(lastException ?: Exception("RETRY_EXHAUSTED"))
     }
 }

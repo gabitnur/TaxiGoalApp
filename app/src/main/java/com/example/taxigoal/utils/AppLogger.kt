@@ -84,9 +84,11 @@ object AppLogger {
      * Masks sensitive patterns: API Keys, Email addresses, Tokens.
      */
     fun sanitize(input: String): String {
-        return input.replace(Regex("AIza[0-9A-Za-z-_]{35}"), "AIza...[HIDDEN]")
-            .replace(Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}"), "user...[HIDDEN]@email.com")
-            .replace(Regex("ya29\\.[0-9A-Za-z-_]+"), "ya29...[TOKEN_HIDDEN]")
+        return input.replace(Regex("AIza[0-9A-Za-z-_]{35}"), "[REDACTED_API_KEY]")
+            .replace(Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}"), "[REDACTED_EMAIL]")
+            .replace(Regex("ya29\\.[0-9A-Za-z-_]+"), "[REDACTED_TOKEN]")
+            .replace(Regex("Bearer\\s+[0-9A-Za-z-_.]+", RegexOption.IGNORE_CASE), "Bearer [REDACTED]")
+            .replace(Regex("password=\\S+", RegexOption.IGNORE_CASE), "password=[REDACTED]")
     }
 
     // Convenience methods

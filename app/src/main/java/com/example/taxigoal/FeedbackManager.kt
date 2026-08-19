@@ -1,8 +1,7 @@
 package com.example.taxigoal
 
 import android.content.Context
-import android.util.Log
-import com.google.ai.client.generativeai.GenerativeModel
+import com.example.taxigoal.utils.AppLogger
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,7 +18,7 @@ object FeedbackManager {
         feedbackText: String,
         onComplete: (Boolean, String?) -> Unit
     ) = withContext(Dispatchers.IO) {
-        val model = GeminiManager.getModel(context)
+        val repository = GeminiRepository(context)
         val prompt = """
             Current record for date $date: $currentJson
             User wants to correct it: $feedbackText
@@ -29,27 +28,31 @@ object FeedbackManager {
         """.trimIndent()
 
         try {
-            val response = model.generateContent(prompt)
-            val cleanJson = response.text?.substringAfter("{")?.substringBeforeLast("}")?.let { "{$it}" } ?: "{}"
-            val correctedJson = JSONObject(cleanJson)
+            val result = repository.sendPromptWithRetry(prompt)
             
-            // Log to Firestore
-            val logData = mapOf(
-                "date" to date,
-                "original" to currentJson,
-                "feedback" to feedbackText,
-                "corrected" to cleanJson,
-                "timestamp" to System.currentTimeMillis(),
-                "user_id" to FirebaseSyncManager.getUserId()
-            )
-            db.collection("feedback_logs").add(logData)
+            result.onSuccess { reply ->
+                val cleanJson = reply.substringAfter("{").substringBeforeLast("}").let { "{$it}" }
+                val correctedJson = JSONObject(cleanJson)
+                
+                // Log to Firestore
+                val logData = mapOf(
+                    "date" to date,
+                    "original" to currentJson,
+                    "feedback" to feedbackText,
+                    "corrected" to cleanJson,
+                    "timestamp" to System.currentTimeMillis(),
+                    "user_id" to FirebaseSyncManager.getUserId()
+                )
+                db.collection("feedback_logs").add(logData)
 
-            withContext(Dispatchers.Main) {
-                applyCorrection(context, date, correctedJson)
-                onComplete(true, null)
+                withContext(Dispatchers.Main) {
+                    applyCorrection(context, date, correctedJson)
+                    onComplete(true, null)
+                }
+            }.onFailure { e ->
+                throw e
             }
         } catch (e: Exception) {
-            AppLogger.logError(context, "FeedbackManager error fixing", e)
             withContext(Dispatchers.Main) {
                 onComplete(false, e.message)
             }

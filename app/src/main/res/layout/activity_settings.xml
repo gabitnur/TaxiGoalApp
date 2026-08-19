@@ -208,11 +208,11 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Gemini API Key -->
+        <!-- Gemini AI Status -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🤖 GEMINI AI (КЛЮЧ)"
+            android:text="🤖 GEMINI AI"
             android:textColor="?attr/text_main"
             android:textSize="12sp"
             android:alpha="0.6"
@@ -232,21 +232,12 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <EditText
-                    android:id="@+id/etGeminiApiKey"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:hint="@string/hint_api_key"
-                    android:textColor="?attr/text_main"
-                    android:textColorHint="?attr/text_main"
-                    android:inputType="textPassword"
-                    android:background="@null" />
-
                 <Button
                     android:id="@+id/btnVerifyApiKey"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="@string/btn_verify_key"
+                    android:text="AI Помощник активен ✅"
+                    android:enabled="false"
                     app:backgroundTint="?attr/accent_primary"
                     app:cornerRadius="12dp" />
             </LinearLayout>

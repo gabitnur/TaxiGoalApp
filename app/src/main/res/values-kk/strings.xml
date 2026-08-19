@@ -28,8 +28,6 @@
     <string name="dark_theme">Қараңғы тақырып</string>
     <string name="light_theme">Жарық тақырып</string>
     <string name="language">Қолданба тілі</string>
-    <string name="gemini_api_key">Gemini API кілті</string>
-    <string name="hint_api_key">API кілтін енгізіңіз</string>
     <string name="btn_verify_key">Кілтті тексеру</string>
     <string name="key_valid">✅ Кілт қабылданды және сақталды!</string>
     <string name="key_invalid">❌ Қате: Сервер кілтті қабылдамады</string>

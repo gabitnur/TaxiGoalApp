@@ -230,6 +230,7 @@ fun TaxiGoalNavigation() {
                     composable(Screen.Diagnostics.route) { DiagnosticsScreen(navController, viewModel) }
                     composable(Screen.GeminiDiagnostic.route) { GeminiDiagnosticScreen(navController) }
                     composable(Screen.About.route) { AboutScreen(navController) }
+                    composable("report_bug") { ReportBugScreen(navController, viewModel) }
                     composable(Screen.GoalDetails.route) { backStackEntry ->
                         val goalId = backStackEntry.arguments?.getString("goalId")?.toLongOrNull()
                         GoalDetailsScreen(navController, viewModel, goalId)

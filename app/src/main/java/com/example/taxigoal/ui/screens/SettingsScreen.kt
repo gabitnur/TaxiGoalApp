@@ -125,6 +125,7 @@ fun SettingsScreen(navController: NavController, viewModel: MainViewModel) {
 
         SettingsSection(title = "Приложение") {
             SettingsItem("Лог ошибок", Icons.Default.BugReport) { navController.navigate(Screen.ErrorLog.route) }
+            SettingsItem("Сообщить об ошибке", Icons.Default.Report) { navController.navigate("report_bug") }
             SettingsItem("Обновление", Icons.Default.SystemUpdate) { navController.navigate(Screen.AppUpdate.route) }
             SettingsItem("О приложении", Icons.Default.Info, value = BuildConfig.VERSION_NAME) { navController.navigate(Screen.About.route) }
         }

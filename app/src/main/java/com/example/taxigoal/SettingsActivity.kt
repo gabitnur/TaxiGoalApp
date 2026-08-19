@@ -62,52 +62,10 @@ class SettingsActivity : BaseActivity() {
         // Set Version Text
         findViewById<TextView>(R.id.tvAppVersion).text = "Версия: ${BuildConfig.VERSION_NAME}"
 
-        // 4. Gemini Key + Verification (Restore robust logic)
-        val etApiKey = findViewById<EditText>(R.id.etGeminiApiKey)
-        etApiKey.setText(prefs.getString("gemini_api_key", ""))
-        
-        findViewById<Button>(R.id.btnVerifyApiKey).setOnClickListener {
-            val key = etApiKey.text.toString().trim()
-            if (key.isEmpty()) {
-                Toast.makeText(this, getString(R.string.key_empty), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            
-            val progress = AlertDialog.Builder(this)
-                .setMessage(getString(R.string.key_verify_progress))
-                .setCancelable(false)
-                .show()
-            
-            MainScope().launch {
-                var foundWorking = false
-                val modelName = GeminiManager.WORKING_MODEL_NAME
-                
-                try {
-                    val testModel = com.google.ai.client.generativeai.GenerativeModel(modelName = modelName, apiKey = key)
-                    val response = withContext(Dispatchers.IO) {
-                        testModel.generateContent("Say hello")
-                    }
-                    
-                    if (response.text != null) {
-                        foundWorking = true
-                        prefs.edit().putString("gemini_api_key", key).apply()
-                        
-                        runOnUiThread {
-                            progress.dismiss()
-                            Toast.makeText(this@SettingsActivity, "✅ Ключ принят! Модель: $modelName", Toast.LENGTH_LONG).show()
-                        }
-                    }
-                } catch (e: Exception) {
-                    // ...
-                }
-                
-                if (!foundWorking) {
-                    runOnUiThread {
-                        progress.dismiss()
-                        Toast.makeText(this@SettingsActivity, "❌ Ошибка: Ключ не принят сервером или нет сети", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
+        // 4. Gemini AI (Backend Managed)
+        findViewById<Button>(R.id.btnVerifyApiKey)?.apply {
+            text = "AI Помощник активен ✅"
+            isEnabled = false
         }
 
         // 5. Язык

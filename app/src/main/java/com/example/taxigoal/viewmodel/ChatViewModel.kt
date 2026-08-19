@@ -10,10 +10,13 @@ import com.example.taxigoal.data.repository.AuthRepository
 import com.example.taxigoal.data.repository.TaxiRepository
 import com.example.taxigoal.utils.AppLogger
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 data class ChatMessage(
     val text: String,
@@ -42,16 +45,24 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    private suspend fun getSystemContext(): String {
-        val userId = authRepository.getUserId() ?: return "Пользователь не авторизован."
+    private suspend fun getSystemContext(): String = withContext(Dispatchers.IO) {
+        val userId = authRepository.getUserId() ?: return@withContext "Пользователь не авторизован."
         val activeGoal = taxiRepository.getActiveGoalSync(userId)
         val allShifts = taxiRepository.getAllShiftsSync(userId)
         
-        // Calculate 30-day daily average income
-        val thirtyDaysAgo = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -30) }.time
-        val recentShifts = allShifts.filter { it.date.after(thirtyDaysAgo) }
-        val avgIncome = if (recentShifts.isNotEmpty()) {
-            recentShifts.sumOf { it.netProfit } / 30.0
+        // ARCHITECTURE FIX: Correct average income calculation based on actual period
+        val avgIncome = if (allShifts.isNotEmpty()) {
+            val firstDate = allShifts.last().date
+            val lastDate = allShifts.first().date
+            val diffMs = lastDate.time - firstDate.time
+            val days = TimeUnit.MILLISECONDS.toDays(diffMs).coerceAtLeast(1)
+            
+            // Limit to last 30 days of data for calculation if period is longer
+            val thirtyDaysAgo = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -30) }.time
+            val recentShifts = allShifts.filter { it.date.after(thirtyDaysAgo) }
+            val recentDays = if (days > 30) 30L else days
+            
+            recentShifts.sumOf { it.netProfit } / recentDays.toDouble()
         } else 0.0
 
         val goalName = activeGoal?.title ?: "Нет активной цели"
@@ -59,7 +70,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         val currentSaved = activeGoal?.accumulatedAmount ?: 0.0
         val remaining = if (targetAmount > currentSaved) targetAmount - currentSaved else 0.0
 
-        return """
+        """
             Ты — финансовый аналитик в приложении "Мой доход". 
 
             ТЕКУЩИЕ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ ИЗ БАЗЫ ДАННЫХ:
@@ -67,7 +78,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             - Нужная сумма: ${targetAmount.toInt()} тг
             - Накоплено сейчас: ${currentSaved.toInt()} тг
             - Осталось накопить: ${remaining.toInt()} тг
-            - Средний доход в день (за 30 дней): ${avgIncome.toInt()} тг
+            - Средний доход в день (на основе реальных данных): ${avgIncome.toInt()} тг
 
             ИНСТРУКЦИИ ДЛЯ РАСЧЕТОВ:
             1. При вопросах "сколько накопил / сколько осталось": используй сухие цифры из блока выше.
@@ -93,6 +104,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
             _messages.value = _messages.value + userMsg
             
             try {
+                // ANR FIX: Database calls now happen on Dispatchers.IO inside getSystemContext()
                 val context = getSystemContext()
                 val fullPrompt = "$context\n\nВОПРОС ПОЛЬЗОВАТЕЛЯ: $text"
                 
@@ -100,7 +112,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 
                 result.onSuccess { reply ->
                     _messages.value = _messages.value + ChatMessage(reply, false)
-                    AppLogger.info("Chat", "GEMINI_REQUEST_SUCCESS", "AI reply received")
+                    AppLogger.info("Gemini", "REQUEST_SUCCESS", "AI reply received")
                 }.onFailure { e ->
                     _error.value = "Ошибка: ${e.message}"
                 }

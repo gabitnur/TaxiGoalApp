@@ -158,85 +158,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // --- Gemini Verification Logic ---
+    // --- Gemini Status (Backend managed) ---
     
     private val geminiPrefs = application.getSharedPreferences("TaxiGoalPrefs", android.content.Context.MODE_PRIVATE)
     
     private val _geminiStatus = MutableStateFlow(loadGeminiStatus())
     val geminiStatus = _geminiStatus.asStateFlow()
 
-    private val _isGeminiVerifying = MutableStateFlow(false)
-    val isGeminiVerifying = _isGeminiVerifying.asStateFlow()
-
-    private val _geminiError = MutableStateFlow<String?>(null)
-    val geminiError = _geminiError.asStateFlow()
-
     private fun loadGeminiStatus(): GeminiApiStatus {
-        val apiKey = geminiPrefs.getString("gemini_api_key", "") ?: ""
-        if (apiKey.isEmpty()) return GeminiApiStatus.NOT_CONFIGURED
-        val lastStatus = geminiPrefs.getString("gemini_last_status", GeminiApiStatus.NOT_CHECKED.name)
-        return try { GeminiApiStatus.valueOf(lastStatus ?: GeminiApiStatus.NOT_CHECKED.name) } 
-        catch (e: Exception) { GeminiApiStatus.NOT_CHECKED }
-    }
-
-    private fun saveGeminiStatus(status: GeminiApiStatus) {
-        _geminiStatus.value = status
-        geminiPrefs.edit().putString("gemini_last_status", status.name).apply()
-        AppLogger.info("Gemini", "STATUS_CHANGE", "New status: ${status.name}")
-    }
-
-    fun verifyAndSaveGeminiKey(key: String, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            _isGeminiVerifying.value = true
-            _geminiError.value = null
-            saveGeminiStatus(GeminiApiStatus.CHECKING)
-            
-            val modelCandidates = listOf(com.example.taxigoal.GeminiManager.WORKING_MODEL_NAME)
-            var success = false
-            var workingModel = ""
-            var lastErr = ""
-
-            for (m in modelCandidates) {
-                try {
-                    AppLogger.info("Gemini", "VERIFY_ATTEMPT", "Testing model: $m")
-                    val model = com.google.ai.client.generativeai.GenerativeModel(modelName = m, apiKey = key)
-                    val resp = model.generateContent("ping")
-                    if (resp.text != null) {
-                        success = true
-                        workingModel = m
-                        break
-                    }
-                } catch (e: Exception) { 
-                    lastErr = e.message ?: "Network or API Error"
-                    AppLogger.warn("Gemini", "MODEL_FAIL", "Model $m: $lastErr")
-                }
-            }
-
-            if (success) {
-                geminiPrefs.edit()
-                    .putString("gemini_api_key", key)
-                    .putString("working_gemini_model", workingModel)
-                    .apply()
-                saveGeminiStatus(GeminiApiStatus.WORKING)
-                onResult(true)
-            } else {
-                _geminiError.value = lastErr
-                saveGeminiStatus(GeminiApiStatus.ERROR)
-                onResult(false)
-            }
-            _isGeminiVerifying.value = false
-        }
+        val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        return if (user != null) GeminiApiStatus.WORKING else GeminiApiStatus.NOT_CONFIGURED
     }
 
     fun resetGeminiStatus() {
-        if (_geminiStatus.value != GeminiApiStatus.NOT_CONFIGURED) {
-            saveGeminiStatus(GeminiApiStatus.NOT_CHECKED)
-        }
+        _geminiStatus.value = loadGeminiStatus()
     }
 
     fun deleteGeminiKey() {
-        geminiPrefs.edit().clear().apply() // Or targeted removals
-        saveGeminiStatus(GeminiApiStatus.NOT_CONFIGURED)
+        // No-op: Keys are on server now
     }
 }
 

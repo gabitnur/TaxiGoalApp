@@ -37,13 +37,12 @@ class AiAssistantActivity : BaseActivity() {
     }
 
     private fun analyzeData(question: String) {
-        val prefs = getSharedPreferences("TaxiGoalPrefs", MODE_PRIVATE)
-        val apiKey = prefs.getString("gemini_api_key", "") ?: ""
-        if (apiKey.isEmpty()) {
-            tvMessage.text = "Ошибка: API ключ не настроен в Настройках"
+        if (!GeminiManager.isConfigured(this)) {
+            tvMessage.text = "Ошибка: Сервис временно недоступен"
             return
         }
 
+        val prefs = getSharedPreferences("TaxiGoalPrefs", MODE_PRIVATE)
         val acc = prefs.getFloat("total_accumulated", 0f).toInt()
         val target = prefs.getFloat("goal_target", 298000f).toInt()
         val history = prefs.getString("shift_history", "{}") ?: "{}"
@@ -70,8 +69,8 @@ class AiAssistantActivity : BaseActivity() {
                     tvMessage.text = text
                 }.onFailure { e ->
                     val errorMsg = e.message ?: ""
-                    if (errorMsg.contains("503") || errorMsg.contains("demand", true)) {
-                        tvMessage.text = "🤖 Сервер Google временно перегружен. Пожалуйста, попробуйте еще раз через минуту."
+                    if (errorMsg.contains("TEMPORARILY_UNAVAILABLE") || errorMsg.contains("503")) {
+                        tvMessage.text = "🤖 Сервер временно перегружен. Пожалуйста, попробуйте еще раз через минуту."
                     } else {
                         tvMessage.text = "Ошибка: ${e.localizedMessage}"
                     }
