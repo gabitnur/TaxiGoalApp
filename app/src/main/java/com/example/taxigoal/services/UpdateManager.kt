@@ -153,11 +153,12 @@ object UpdateManager {
 
     private fun compareAndReturn(info: UpdateInfo): Result<UpdateInfo?> {
         val currentVersionCode = BuildConfig.VERSION_CODE
-        Log.d(TAG, "UpdateManager: currentVersionCode=$currentVersionCode")
-        Log.d(TAG, "UpdateManager: remoteVersionCode=${info.versionCode}")
+        Log.d(TAG, "UpdateManager: CURRENT_VERSION_CODE=$currentVersionCode")
+        Log.d(TAG, "UpdateManager: REMOTE_VERSION_CODE=${info.versionCode}")
+        Log.d(TAG, "UpdateManager: REMOTE_VERSION_NAME=${info.versionName}")
         
         val updateAvailable = info.versionCode > currentVersionCode
-        Log.d(TAG, "UpdateManager: updateAvailable=$updateAvailable")
+        Log.d(TAG, "UpdateManager: UPDATE_AVAILABLE=$updateAvailable")
 
         return if (updateAvailable) {
             Log.i(TAG, "UpdateManager: Update AVAILABLE: v${info.versionName}")

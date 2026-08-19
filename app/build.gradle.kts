@@ -18,8 +18,8 @@ android {
         applicationId = "com.example.taxigoal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 22
-        versionName = "1.0.22"
+        versionCode = 23
+        versionName = "1.0.23"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -31,6 +31,11 @@ android {
         }
         val geminiKey = properties.getProperty("GEMINI_API_KEY") ?: System.getenv("GEMINI_API_KEY") ?: ""
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
 
     lint {
