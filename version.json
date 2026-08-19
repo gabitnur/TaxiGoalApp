@@ -1,11 +1,11 @@
 {
-  "versionCode": 32,
-  "versionName": "1.0.32",
-  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.32/update.apk",
+  "versionCode": 33,
+  "versionName": "1.0.33",
+  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.33/update.apk",
   "releaseNotes": [
-    "Обновление до v1.0.32",
-    "Реструктуризация API маршрутов Vercel",
-    "Исправлена ошибка BACKEND_ROUTE_NOT_FOUND",
-    "Стабилизация работы ИИ-чата"
+    "Обновление до v1.0.33",
+    "ИИ-чат полностью переведен на защищенный бэкенд Vercel",
+    "Исправлены ошибки маршрутизации API",
+    "Оптимизирована работа с Firebase ID Token"
   ]
 }
