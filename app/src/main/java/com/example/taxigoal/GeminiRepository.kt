@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit
 
 class GeminiRepository(private val context: Context) {
 
-    // Vercel Endpoint from BuildConfig
-    private val BASE_URL = BuildConfig.BASE_URL 
+    // Vercel Endpoint from BuildConfig (Must end with /)
+    private val BASE_URL = if (BuildConfig.BASE_URL.endsWith("/")) BuildConfig.BASE_URL else "${BuildConfig.BASE_URL}/" 
     
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
