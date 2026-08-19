@@ -25,6 +25,7 @@ class GeminiRepository(private val context: Context) {
                     apiKey = apiKey
                 )
                 
+                AppLogger.info("Gemini", "GENERATING_CONTENT", "Prompt length: ${prompt.length}")
                 val response = model.generateContent(prompt)
                 val text = response.text
                 

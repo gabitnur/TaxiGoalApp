@@ -15,7 +15,11 @@ object GeminiManager {
         val key = if (!userKey.isNullOrBlank()) userKey else BuildConfig.GEMINI_API_KEY
         
         // SAFE LOGGING: Only log the fact that the key is present
-        Log.i("Gemini", "API_KEY_CONFIGURED=${key.isNotBlank()}")
+        if (key.isBlank()) {
+            Log.w("Gemini", "GEMINI_API_KEY is EMPTY!")
+        } else {
+            Log.i("Gemini", "API_KEY_CONFIGURED=true")
+        }
         Log.i("Gemini", "MODEL=$WORKING_MODEL_NAME")
         
         return key
