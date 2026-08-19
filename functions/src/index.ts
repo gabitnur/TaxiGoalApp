@@ -15,16 +15,23 @@ export const geminiChat = functions.https.onCall({
         throw new functions.https.HttpsError("unauthenticated", "Auth required");
     }
 
-    const { message, safeContext } = request.data;
+    const { message, safeContext, requestId } = request.data;
     if (!message) {
         throw new functions.https.HttpsError("invalid-argument", "Message is missing");
     }
 
+    const currentRequestId = requestId || `FUN-${Date.now()}`;
+
     try {
-        const reply = await gemini.chat(message, safeContext || "");
-        return { success: true, reply };
+        // chat function now returns a structured object { success, reply?, debug?, errorType?, message? }
+        return await gemini.chat(message, safeContext || "", currentRequestId);
     } catch (error: any) {
-        return { success: false, errorType: "UNKNOWN_ERROR", message: error.message };
+        return {
+            success: false,
+            errorType: "UNKNOWN_ERROR",
+            message: error.message,
+            debug: { requestId: currentRequestId, internal: error.stack }
+        };
     }
 });
 

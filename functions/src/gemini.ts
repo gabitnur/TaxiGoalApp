@@ -3,24 +3,25 @@ import { defineSecret } from "firebase-functions/params";
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
-// Primary model identifier
+// Primary model identifier for deep debug
 const PRIMARY_MODEL = "gemini-flash-latest";
+const API_VERSION = "v1.5-flash"; // Internal mapping
+const ENDPOINT_HOST = "generativelanguage.googleapis.com";
 
-export async function chat(message: string, context: string) {
+export async function chat(message: string, context: string, requestId: string) {
     const apiKey = geminiApiKey.value();
     if (!apiKey) {
         throw new Error("GEMINI_API_KEY is not configured on server");
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    console.info(`[Gemini][${requestId}] DEBUG_API_REQUEST | Model: ${PRIMARY_MODEL} | Provider: Google | Host: ${ENDPOINT_HOST}`);
 
-    // According to Google AI SDK, "gemini-flash-latest" is the alias to the latest 1.5 Flash model.
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: PRIMARY_MODEL });
 
     const prompt = `${context}\n\nUser Question: ${message}`;
 
     try {
-        console.log(`Gemini: Using model ${PRIMARY_MODEL}`);
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
@@ -29,26 +30,39 @@ export async function chat(message: string, context: string) {
             throw new Error("EMPTY_RESPONSE");
         }
 
-        return text;
+        return { success: true, reply: text };
     } catch (error: any) {
-        console.error("Gemini Error:", error);
+        console.error(`[Gemini][${requestId}] DEBUG ERROR | Status: ${error.status || "UNKNOWN"} | Msg: ${error.message}`);
 
-        // Detailed error mapping
-        if (error.message?.includes("404") || error.message?.includes("not found")) {
-            return { errorType: "MODEL_NOT_FOUND", message: `Model ${PRIMARY_MODEL} not found or unavailable` };
-        }
-        if (error.message?.includes("503") || error.message?.includes("demand")) {
-            return { errorType: "TEMPORARILY_UNAVAILABLE", message: "AI service high demand" };
-        }
-        if (error.message?.includes("429")) {
-            return { errorType: "RATE_LIMITED", message: "Too many requests" };
-        }
-        if (error.message?.includes("401") || error.message?.includes("API key")) {
-            return { errorType: "AUTH_ERROR", message: "Invalid API Key on server" };
-        }
+        // Extract as much info as possible from the SDK error
+        const debugInfo = {
+            requestId: requestId,
+            provider: "google-gemini",
+            model: PRIMARY_MODEL,
+            apiVersion: API_VERSION,
+            endpointHost: ENDPOINT_HOST,
+            httpStatus: error.status || 500,
+            status: error.statusText || "INTERNAL_ERROR",
+            message: error.message || "Unknown error occurred"
+        };
 
-        return { errorType: "UNKNOWN_ERROR", message: error.message };
+        return {
+            success: false,
+            debug: debugInfo,
+            errorType: mapErrorType(error.message),
+            message: error.message
+        };
     }
+}
+
+function mapErrorType(msg: string): string {
+    if (!msg) return "UNKNOWN_ERROR";
+    const lower = msg.toLowerCase();
+    if (lower.includes("404") || lower.includes("not found")) return "MODEL_NOT_FOUND";
+    if (lower.includes("503") || lower.includes("demand")) return "TEMPORARILY_UNAVAILABLE";
+    if (lower.includes("429")) return "RATE_LIMITED";
+    if (lower.includes("401") || lower.includes("api key")) return "AUTH_ERROR";
+    return "UNKNOWN_ERROR";
 }
 
 /**

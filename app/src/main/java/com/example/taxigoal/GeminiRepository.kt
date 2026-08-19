@@ -3,8 +3,10 @@ package com.example.taxigoal
 import android.content.Context
 import com.example.taxigoal.utils.AppLogger
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.FirebaseFunctionsException
 import kotlinx.coroutines.tasks.await
-import java.util.UUID
+import java.text.SimpleDateFormat
+import java.util.*
 
 class GeminiRepository(private val context: Context) {
 
@@ -14,19 +16,25 @@ class GeminiRepository(private val context: Context) {
         var lastException: Exception? = null
         
         repeat(retries) { attempt ->
+            val requestId = "GEM-${SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())}-${(100..999).random()}"
+            
             try {
-                AppLogger.info("Gemini", "REQUEST_START", "Backend: FIREBASE_FUNCTION | Attempt: ${attempt + 1}")
+                AppLogger.info("Gemini", "DEBUG_REQUEST", "RequestId: $requestId | Backend: FIREBASE_FUNCTION | Attempt: ${attempt + 1}")
                 
                 val data = hashMapOf(
                     "message" to prompt,
                     "safeContext" to safeContext,
-                    "requestId" to UUID.randomUUID().toString()
+                    "requestId" to requestId
                 )
 
-                val result = functions
-                    .getHttpsCallable("geminiChat")
-                    .call(data)
-                    .await()
+                // Call the Firebase Function
+                val result = try {
+                    functions.getHttpsCallable("geminiChat").call(data).await()
+                } catch (e: FirebaseFunctionsException) {
+                    AppLogger.error("Gemini", "DEBUG_FIREBASE_ERROR", 
+                        "RequestId: $requestId | Code: ${e.code} | Msg: ${e.message} | Details: ${e.details}")
+                    throw e
+                }
 
                 val responseData = result.data as? Map<*, *>
                 val success = responseData?.get("success") as? Boolean ?: false
@@ -34,9 +42,16 @@ class GeminiRepository(private val context: Context) {
                 if (success) {
                     val reply = responseData?.get("reply") as? String
                     if (!reply.isNullOrBlank()) {
-                        AppLogger.info("Gemini", "REQUEST_SUCCESS", "Reply length: ${reply.length}")
+                        AppLogger.info("Gemini", "REQUEST_SUCCESS", "RequestId: $requestId | Reply received")
                         return Result.success(reply)
                     }
+                }
+                
+                // If not success, look for debug info from backend
+                val debug = responseData?.get("debug") as? Map<*, *>
+                if (debug != null) {
+                    AppLogger.error("Gemini", "DEBUG_ERROR", 
+                        "RequestId: $requestId | HTTP: ${debug["httpStatus"]} | Status: ${debug["status"]} | Msg: ${debug["message"]}")
                 }
                 
                 val errorType = responseData?.get("errorType") as? String ?: "UNKNOWN_ERROR"
@@ -47,10 +62,10 @@ class GeminiRepository(private val context: Context) {
                 val msg = e.message ?: ""
                 
                 if (msg.contains("TEMPORARILY_UNAVAILABLE") || msg.contains("RATE_LIMITED") || msg.contains("503") || msg.contains("429")) {
-                    AppLogger.warn("Gemini", "REQUEST_RETRY", "Server busy: $msg")
+                    AppLogger.warn("Gemini", "REQUEST_RETRY", "RequestId: $requestId | Server busy: $msg")
                     kotlinx.coroutines.delay(1000L * (attempt + 1))
                 } else {
-                    AppLogger.error("Gemini", "REQUEST_FAILED", "Fatal error: $msg")
+                    AppLogger.error("Gemini", "REQUEST_FAILED", "RequestId: $requestId | Fatal error: $msg")
                     return Result.failure(e)
                 }
             }

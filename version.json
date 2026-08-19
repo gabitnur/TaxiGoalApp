@@ -1,14 +1,11 @@
 {
-  "versionCode": 26,
-  "versionName": "1.0.26",
-  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.26/update.apk",
+  "versionCode": 27,
+  "versionName": "1.0.27",
+  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.27/update.apk",
   "releaseNotes": [
-    "Обновление до v1.0.26",
-    "Единая финансовая модель и форматирование валюты",
-    "Прогноз достижения цели на основе реальных данных",
-    "Быстрое пополнение цели с чистой прибыли",
-    "Голосовой ввод смен через Gemini AI",
-    "Детализация расходов по категориям",
-    "Профиль автомобиля и расчет амортизации"
+    "Обновление до v1.0.27 (DEBUG)",
+    "Включен режим глубокой диагностики Gemini Chat",
+    "RequestId для отслеживания запросов",
+    "Расширенное логирование ошибок на стороне Backend"
   ]
 }
