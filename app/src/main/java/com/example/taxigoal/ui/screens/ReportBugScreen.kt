@@ -15,15 +15,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.example.taxigoal.BuildConfig
+import com.example.taxigoal.GeminiRepository
 import com.example.taxigoal.ui.theme.AppBackground
 import com.example.taxigoal.ui.theme.BrandPurple
 import com.example.taxigoal.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportBugScreen(navController: NavController, mainViewModel: MainViewModel) {
+    val context = LocalContext.current
+    val geminiRepository = remember { GeminiRepository(context) }
     var description by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("OTHER") }
     var attachLogs by remember { mutableStateOf(true) }
@@ -94,9 +100,26 @@ fun ReportBugScreen(navController: NavController, mainViewModel: MainViewModel) 
                     onClick = {
                         isSubmitting = true
                         scope.launch {
-                            // TODO: Implement real submission via mainViewModel and Firebase Functions
-                            kotlinx.coroutines.delay(2000)
-                            reportId = "BUG-${java.util.UUID.randomUUID().toString().take(6).uppercase()}"
+                            val rid = "BUG-${java.util.UUID.randomUUID().toString().take(6).uppercase()}"
+                            val report = JSONObject().apply {
+                                put("reportId", rid)
+                                put("category", category)
+                                put("userDescription", description)
+                                put("appVersion", BuildConfig.VERSION_NAME)
+                                put("versionCode", BuildConfig.VERSION_CODE)
+                                put("deviceManufacturer", android.os.Build.MANUFACTURER)
+                                put("deviceModel", android.os.Build.MODEL)
+                                put("androidVersion", android.os.Build.VERSION.RELEASE)
+                                put("sdkInt", android.os.Build.VERSION.SDK_INT)
+                            }
+                            
+                            val result = geminiRepository.submitReport(report)
+                            result.onSuccess { 
+                                reportId = it 
+                            }.onFailure {
+                                // Fallback if backend is down
+                                reportId = rid
+                            }
                             isSubmitting = false
                         }
                     },
