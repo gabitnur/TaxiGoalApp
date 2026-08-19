@@ -1,6 +1,7 @@
 package com.example.taxigoal
 
 import android.content.Context
+import android.util.Log
 import com.example.taxigoal.utils.AppLogger
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class GeminiRepository(private val context: Context) {
@@ -47,6 +47,7 @@ class GeminiRepository(private val context: Context) {
                     put("requestId", requestId)
                 }
 
+                // Path must match exactly with Vercel function: api/gemini.ts
                 val request = Request.Builder()
                     .url("$BASE_URL/api/gemini")
                     .addHeader("Authorization", "Bearer $idToken")
@@ -55,6 +56,11 @@ class GeminiRepository(private val context: Context) {
 
                 // 3. Execute Call
                 client.newCall(request).execute().use { response ->
+                    if (response.code == 404) {
+                        Log.e("Gemini", "Эндпоинт Vercel не найден (HTTP 404). Проверьте URL в GeminiRepository. URL: ${request.url}")
+                        return@withContext Result.failure(Exception("BACKEND_ROUTE_NOT_FOUND"))
+                    }
+
                     val responseBody = response.body?.string() ?: ""
                     val responseJson = if (responseBody.startsWith("{")) JSONObject(responseBody) else JSONObject()
 
@@ -105,6 +111,11 @@ class GeminiRepository(private val context: Context) {
                 .build()
 
             client.newCall(request).execute().use { response ->
+                if (response.code == 404) {
+                    Log.e("Gemini", "Эндпоинт Vercel (Report) не найден (HTTP 404).")
+                    return@withContext Result.failure(Exception("BACKEND_ROUTE_NOT_FOUND"))
+                }
+                
                 val body = response.body?.string() ?: ""
                 if (response.isSuccessful) {
                     val json = JSONObject(body)

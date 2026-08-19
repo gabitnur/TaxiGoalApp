@@ -1,11 +1,11 @@
 {
-  "versionCode": 30,
-  "versionName": "1.0.30",
-  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.30/update.apk",
+  "versionCode": 31,
+  "versionName": "1.0.31",
+  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.31/update.apk",
   "releaseNotes": [
-    "Обновление до v1.0.30",
-    "Переход на защищенный бэкенд Vercel",
-    "Gemini AI работает через шифрованный канал",
-    "Удалены все секретные ключи из APK"
+    "Обновление до v1.0.31",
+    "Синхронизация API-эндпоинтов Vercel",
+    "Исправление ошибки HTTP 404 в чате",
+    "Расширенное логирование для отладки бэкенда"
   ]
 }

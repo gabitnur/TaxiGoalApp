@@ -48,10 +48,10 @@ jobs:
       - name: Generate version.json
         run: |
           echo '{
-            "versionCode": 30,
-            "versionName": "1.0.30",
+            "versionCode": 31,
+            "versionName": "1.0.31",
             "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/${{ github.ref_name }}/update.apk",
-            "releaseNotes": ["Автоматическое обновление v1.0.30", "Защищенный бэкенд Vercel", "Удалены ключи из APK"]
+            "releaseNotes": ["Автоматическое обновление v1.0.31", "Синхронизация API эндпоинтов Vercel"]
           }' > version.json
 
       - name: Commit version.json to main branch

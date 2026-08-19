@@ -17,8 +17,8 @@ android {
         applicationId = "com.example.taxigoal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 30
-        versionName = "1.0.30"
+        versionCode = project.property("APP_VERSION_CODE").toString().toInt()
+        versionName = project.property("APP_VERSION_NAME").toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
