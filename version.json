@@ -1,11 +1,11 @@
 {
-  "versionCode": 33,
-  "versionName": "1.0.33",
-  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.33/update.apk",
+  "versionCode": 35,
+  "versionName": "1.0.35",
+  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.35/update.apk",
   "releaseNotes": [
-    "Обновление до v1.0.33",
-    "ИИ-чат полностью переведен на защищенный бэкенд Vercel",
-    "Исправлены ошибки маршрутизации API",
-    "Оптимизирована работа с Firebase ID Token"
+    "Обновление до v1.0.35",
+    "Переход на прямой вызов Gemini SDK",
+    "Улучшена стабильность распознавания голоса",
+    "Оптимизация производительности"
   ]
 }
