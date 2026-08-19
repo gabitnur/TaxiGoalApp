@@ -23,7 +23,6 @@ class GeminiRepository(private val context: Context) {
                     "requestId" to UUID.randomUUID().toString()
                 )
 
-                // Call the Firebase Function instead of direct Gemini SDK
                 val result = functions
                     .getHttpsCallable("geminiChat")
                     .call(data)
@@ -58,5 +57,36 @@ class GeminiRepository(private val context: Context) {
         }
         
         return Result.failure(lastException ?: Exception("RETRY_EXHAUSTED"))
+    }
+
+    suspend fun parseVoiceInput(text: String): Result<Map<String, Double?>> {
+        val prompt = """
+            Ты — парсер финансовых данных водителя такси.
+            Распознай из текста следующие поля: выручка (income), топливо (fuel), еда (food), пробег (mileage), мойка (wash), ремонт (maintenance), штрафы (fines), другое (other).
+            
+            ПРАВИЛА:
+            1. Верни СТРОГО JSON объект.
+            2. Если поле не найдено в тексте, поставь null.
+            3. Не выдумывай данные.
+            4. Все суммы должны быть числами.
+            
+            ТЕКСТ: "$text"
+        """.trimIndent()
+
+        return try {
+            val result = sendPromptWithRetry(prompt)
+            result.map { reply ->
+                val json = reply.substringAfter("{").substringBeforeLast("}").let { "{$it}" }
+                val jsonObj = org.json.JSONObject(json)
+                val map = mutableMapOf<String, Double?>()
+                val keys = listOf("income", "fuel", "food", "mileage", "wash", "maintenance", "fines", "other")
+                for (key in keys) {
+                    map[key] = if (jsonObj.isNull(key)) null else jsonObj.optDouble(key)
+                }
+                map
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

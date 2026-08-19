@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -21,7 +22,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val taxiDao = TaxiDatabase.getDatabase(application).taxiDao()
         repository = TaxiRepository(taxiDao)
-        AppLogger.info("MainViewModel", "INIT", "ViewModel initialized with DB Version 2")
+        AppLogger.info("MainViewModel", "INIT", "ViewModel initialized with DB Version 3")
     }
 
     private fun getUserId(): String = authRepository.getUserId() ?: "anonymous"
@@ -44,6 +45,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         } else flowOf(null)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    val vehicle = authRepository.observeAuthState().flatMapLatest { user ->
+        if (user != null) {
+            TaxiDatabase.getDatabase(getApplication()).taxiDao().getVehicle(user.uid)
+        } else flowOf(null)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     val logs = authRepository.observeAuthState().flatMapLatest { user ->
         if (user != null) {
             TaxiDatabase.getDatabase(getApplication()).logDao().getAllLogs()
@@ -51,19 +58,43 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val monthlyStats = shifts.map { list ->
-        val now = Calendar.getInstance()
-        val currentMonthShifts = list.filter {
-            val cal = Calendar.getInstance().apply { time = it.date }
-            cal.get(Calendar.MONTH) == now.get(Calendar.MONTH) && 
-            cal.get(Calendar.YEAR) == now.get(Calendar.YEAR)
-        }
+        val thirtyDaysAgo = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -30) }.time
+        val recentShifts = list.filter { it.date.after(thirtyDaysAgo) }
         
-        val totalGross = currentMonthShifts.sumOf { it.grossIncome }
-        val totalProfit = currentMonthShifts.sumOf { it.netProfit }
-        val fuel = currentMonthShifts.sumOf { it.fuelCost }
-        val commissions = currentMonthShifts.sumOf { it.commissions }
-        
-        MonthlySummary(totalGross, totalProfit, fuel, commissions, currentMonthShifts.size)
+        val totalGross = recentShifts.sumOf { it.grossIncome }
+        val totalProfit = recentShifts.sumOf { it.netProfit }
+        val fuel = recentShifts.sumOf { it.fuelCost }
+        val commissions = recentShifts.sumOf { it.commissions }
+        val food = recentShifts.sumOf { it.foodCost }
+        val wash = recentShifts.sumOf { it.washCost }
+        val maintenance = recentShifts.sumOf { it.maintenanceCost }
+        val fines = recentShifts.sumOf { it.fineCost }
+        val other = recentShifts.sumOf { it.otherExpenses }
+        val depreciation = recentShifts.sumOf { it.depreciation }
+
+        // Use actual period for daily average profit
+        val avgDailyProfit = if (recentShifts.isNotEmpty()) {
+            val lastShiftDate = recentShifts.first().date
+            val firstShiftDate = recentShifts.last().date
+            val diffMs = lastShiftDate.time - firstShiftDate.time
+            val days = TimeUnit.MILLISECONDS.toDays(diffMs).coerceAtLeast(1)
+            totalProfit / days.toDouble()
+        } else 0.0
+
+        MonthlySummary(
+            gross = totalGross, 
+            profit = totalProfit, 
+            fuel = fuel, 
+            commissions = commissions,
+            food = food,
+            wash = wash,
+            maintenance = maintenance,
+            fines = fines,
+            other = other,
+            depreciation = depreciation,
+            avgDailyProfit = avgDailyProfit,
+            count = recentShifts.size
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MonthlySummary())
 
     // --- Actions ---
@@ -72,27 +103,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         gross: Double,
         fuel: Double,
         mileage: Double,
-        maintenance: Double,
-        fines: Double,
-        other: Double,
+        food: Double = 0.0,
+        wash: Double = 0.0,
+        maintenance: Double = 0.0,
+        fines: Double = 0.0,
+        other: Double = 0.0,
         goalId: Long?
     ) {
         val currentUserId = getUserId()
+        val v = vehicle.value
+        
         viewModelScope.launch {
             try {
+                // AUTO COMMISSION: 18%
                 val comms = gross * 0.18
-                val profit = gross - comms - fuel - maintenance - fines - other
+                
+                // AUTO CALC: Cost per km if vehicle profile is set
+                val calcDepreciation = if (v != null) mileage * (v.depreciationPerKm + v.tiresPerKm + v.otherPerKm) else 0.0
+                
+                val profit = gross - comms - fuel - food - wash - maintenance - fines - other - calcDepreciation
                 
                 val shift = Shift(
                     userId = currentUserId,
                     date = Date(),
                     grossIncome = gross,
                     fuelCost = fuel,
+                    foodCost = food,
+                    washCost = wash,
                     mileage = mileage,
                     maintenanceCost = maintenance,
                     fineCost = fines,
                     otherExpenses = other,
                     commissions = comms,
+                    depreciation = calcDepreciation,
                     netProfit = profit,
                     goalId = goalId
                 )
@@ -104,12 +147,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     val goal = goals.value.find { it.id == gid }
                     goal?.let {
                         repository.updateGoal(it.copy(accumulatedAmount = it.accumulatedAmount + profit))
-                        AppLogger.info("Goal", "PROGRESS_UPDATE", "Updated goal: ${it.title}")
                     }
                 }
             } catch (e: Exception) {
-                AppLogger.error("Shift", "DB_SAVE_FAILED", "Failed to save shift", details = AppLogger.getErrorDetails(e))
+                AppLogger.error("Shift", "DB_SAVE_FAILED", AppLogger.getErrorDetails(e))
             }
+        }
+    }
+
+    fun updateVehicle(v: Vehicle) {
+        viewModelScope.launch {
+            TaxiDatabase.getDatabase(getApplication()).taxiDao().updateVehicle(v.copy(userId = getUserId()))
         }
     }
 
@@ -119,7 +167,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val goal = goals.value.find { it.id == goalId }
                 goal?.let {
                     repository.updateGoal(it.copy(accumulatedAmount = it.accumulatedAmount + amount))
-                    AppLogger.info("Goal", "MANUAL_UPDATE", "Added $amount to goal ${it.title}")
                 }
             } catch (e: Exception) {
                 AppLogger.error("Goal", "UPDATE_FAILED", AppLogger.getErrorDetails(e))
@@ -127,20 +174,32 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addGoal(title: String, target: Double) {
+    fun depositToGoal(goalId: Long, amount: Double) {
         viewModelScope.launch {
             try {
-                val goal = Goal(
-                    userId = getUserId(),
-                    title = title,
-                    targetAmount = target,
-                    isActive = true
-                )
-                repository.insertGoal(goal)
-                AppLogger.info("Goal", "DB_INSERT", "New goal added: $title")
+                val goal = goals.value.find { it.id == goalId }
+                goal?.let {
+                    repository.updateGoal(it.copy(accumulatedAmount = it.accumulatedAmount + amount))
+                    val transaction = FinancialTransaction(
+                        userId = getUserId(),
+                        amount = amount,
+                        category = "GOAL_DEPOSIT",
+                        description = "Пополнение цели: ${it.title}",
+                        type = "EXPENSE",
+                        source = "MANUAL"
+                    )
+                    repository.insertTransaction(transaction)
+                }
             } catch (e: Exception) {
-                AppLogger.error("Goal", "ADD_FAILED", AppLogger.getErrorDetails(e))
+                AppLogger.error("Goal", "DEPOSIT_FAILED", AppLogger.getErrorDetails(e))
             }
+        }
+    }
+
+    fun addGoal(title: String, target: Double) {
+        viewModelScope.launch {
+            val goal = Goal(userId = getUserId(), title = title, targetAmount = target, isActive = true)
+            repository.insertGoal(goal)
         }
     }
 
@@ -159,8 +218,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // --- Gemini Status (Backend managed) ---
-    
-    private val geminiPrefs = application.getSharedPreferences("TaxiGoalPrefs", android.content.Context.MODE_PRIVATE)
     
     private val _geminiStatus = MutableStateFlow(loadGeminiStatus())
     val geminiStatus = _geminiStatus.asStateFlow()
@@ -184,5 +241,12 @@ data class MonthlySummary(
     val profit: Double = 0.0,
     val fuel: Double = 0.0,
     val commissions: Double = 0.0,
+    val food: Double = 0.0,
+    val wash: Double = 0.0,
+    val maintenance: Double = 0.0,
+    val fines: Double = 0.0,
+    val other: Double = 0.0,
+    val depreciation: Double = 0.0,
+    val avgDailyProfit: Double = 0.0,
     val count: Int = 0
 )

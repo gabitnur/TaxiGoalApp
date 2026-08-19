@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.taxigoal.ui.theme.*
 import com.example.taxigoal.utils.AppLogger
+import com.example.taxigoal.utils.CurrencyFormatter
 import com.example.taxigoal.viewmodel.MainViewModel
-import com.example.taxigoal.viewmodel.MonthlySummary
 import java.util.*
 
 private const val SCREEN = "StatisticsScreen"
@@ -89,8 +89,11 @@ fun StatisticsScreen(viewModel: MainViewModel) {
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                Text(text = "Чистая прибыль", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                Text(text = "${monthlySummary.profit.toInt()} ₸", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = TextPrimary)
+                val label = if (monthlySummary.profit >= 0) "Чистая прибыль" else "Чистый убыток"
+                val valueColor = if (monthlySummary.profit >= 0) SuccessGreen else Color.Red
+                
+                Text(text = label, style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                Text(text = CurrencyFormatter.format(monthlySummary.profit), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = valueColor)
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
@@ -102,14 +105,16 @@ fun StatisticsScreen(viewModel: MainViewModel) {
 
         // --- Metrics Grid ---
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            StatGridCard(Modifier.weight(1f), "Выручка", "${monthlySummary.gross.toInt()} ₸", Icons.AutoMirrored.Filled.TrendingUp, Color(0xFFE8F5E9))
-            StatGridCard(Modifier.weight(1f), "Расходы", "${(monthlySummary.gross - monthlySummary.profit).toInt()} ₸", Icons.AutoMirrored.Filled.TrendingDown, Color(0xFFFFEBEE))
+            StatGridCard(Modifier.weight(1f), "Выручка", CurrencyFormatter.format(monthlySummary.gross), Icons.AutoMirrored.Filled.TrendingUp, Color(0xFFE8F5E9))
+            val totalExpenses = monthlySummary.gross - monthlySummary.profit
+            StatGridCard(Modifier.weight(1f), "Расходы", CurrencyFormatter.format(totalExpenses), Icons.AutoMirrored.Filled.TrendingDown, Color(0xFFFFEBEE))
         }
         
         Spacer(modifier = Modifier.height(12.dp))
         
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            StatGridCard(Modifier.weight(1f), "Средний доход", "${if (monthlySummary.count > 0) (monthlySummary.profit / monthlySummary.count).toInt() else 0} ₸", Icons.AutoMirrored.Filled.TrendingUp, Color.White)
+            val avgProfitPerShift = if (monthlySummary.count > 0) monthlySummary.profit / monthlySummary.count else 0.0
+            StatGridCard(Modifier.weight(1f), "Прибыль / смена", CurrencyFormatter.format(avgProfitPerShift), Icons.AutoMirrored.Filled.TrendingUp, Color.White)
             StatGridCard(Modifier.weight(1f), "Смены", "${monthlySummary.count}", Icons.AutoMirrored.Filled.TrendingUp, Color.White)
         }
 
@@ -124,9 +129,13 @@ fun StatisticsScreen(viewModel: MainViewModel) {
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                ExpenseItem("Топливо", monthlySummary.fuel, FuelOrange)
-                ExpenseItem("Комиссии", monthlySummary.commissions, YandexYellow)
-                ExpenseItem("Прочее", monthlySummary.gross - monthlySummary.profit - monthlySummary.fuel - monthlySummary.commissions, Color.Gray)
+                val totalExp = (monthlySummary.gross - monthlySummary.profit).coerceAtLeast(1.0)
+                
+                ExpenseItem("⛽ Топливо", monthlySummary.fuel, totalExp, FuelOrange)
+                ExpenseItem("📱 Комиссии", monthlySummary.commissions, totalExp, YandexYellow)
+                ExpenseItem("🔧 ТО и ремонт", monthlySummary.maintenance, totalExp, Color(0xFF2196F3))
+                ExpenseItem("👮 Штрафы", monthlySummary.fines, totalExp, Color.Black)
+                ExpenseItem("📦 Прочее", monthlySummary.other, totalExp, Color.Gray)
             }
         }
         
@@ -161,14 +170,16 @@ fun ProfitLineChart(shifts: List<com.example.taxigoal.data.entities.Shift>) {
     Canvas(modifier = Modifier.fillMaxWidth().height(180.dp).padding(8.dp)) {
         val width = size.width
         val height = size.height
-        val maxProfit = points.maxOrNull()?.coerceAtLeast(1f) ?: 1f
+        val maxProfit = points.maxOf { it }.coerceAtLeast(1f)
+        val minProfit = points.minOf { it }.coerceAtMost(0f)
+        val range = maxProfit - minProfit
         
         val spaceX = width / (points.size.coerceAtLeast(2) - 1)
         val path = Path()
         
         points.forEachIndexed { index, profit ->
             val x = index * spaceX
-            val y = height - (profit / maxProfit * height)
+            val y = height - ((profit - minProfit) / range * height)
             if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
         }
         
@@ -198,12 +209,16 @@ fun StatGridCard(modifier: Modifier, title: String, value: String, icon: android
 }
 
 @Composable
-fun ExpenseItem(name: String, amount: Double, color: Color) {
+fun ExpenseItem(name: String, amount: Double, total: Double, color: Color) {
     if (amount <= 0) return
+    val percent = (amount / total * 100).toInt()
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 6.dp)) {
         Box(Modifier.size(8.dp).background(color, CircleShape))
         Spacer(modifier = Modifier.width(12.dp))
         Text(name, fontSize = 14.sp, modifier = Modifier.weight(1f), color = TextPrimary)
-        Text("${amount.toInt()} ₸", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+        Column(horizontalAlignment = Alignment.End) {
+            Text(CurrencyFormatter.format(amount), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text("$percent%", fontSize = 10.sp, color = Color.Gray)
+        }
     }
 }

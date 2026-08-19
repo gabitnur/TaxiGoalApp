@@ -17,8 +17,8 @@ android {
         applicationId = "com.example.taxigoal"
         minSdk = 24
         targetSdk = 35
-        versionCode = 25
-        versionName = "1.0.25"
+        versionCode = 26
+        versionName = "1.0.26"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -136,4 +136,6 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.0")
     
     debugImplementation("androidx.compose.ui:ui-tooling")
+    
+    testImplementation("junit:junit:4.13.2")
 }

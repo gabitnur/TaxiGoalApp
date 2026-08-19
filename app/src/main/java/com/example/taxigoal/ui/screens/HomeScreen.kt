@@ -8,20 +8,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.taxigoal.data.entities.Shift
+import com.example.taxigoal.ui.components.DepositDialog
 import com.example.taxigoal.ui.components.GeminiIcon
 import com.example.taxigoal.ui.components.GoalCard
 import com.example.taxigoal.ui.components.MetricItem
@@ -29,6 +27,7 @@ import com.example.taxigoal.ui.components.QuickActionCard
 import com.example.taxigoal.ui.navigation.Screen
 import com.example.taxigoal.ui.theme.*
 import com.example.taxigoal.utils.AppLogger
+import com.example.taxigoal.utils.CurrencyFormatter
 import com.example.taxigoal.viewmodel.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
@@ -43,6 +42,8 @@ fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
     val shifts by viewModel.shifts.collectAsState()
     val lastShift = shifts.firstOrNull()
     
+    var showDepositDialog by remember { mutableStateOf(false) }
+
     val user = FirebaseAuth.getInstance().currentUser
     val userName = remember(user) {
         if (user?.isAnonymous == true) "Гость"
@@ -93,10 +94,12 @@ fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
         activeGoal?.let { goal ->
             GoalCard(
                 goal = goal,
+                avgDailyProfit = monthlyStats.avgDailyProfit,
                 onEditClick = { 
                     AppLogger.buttonClick(SCREEN, "BTN_EDIT_GOAL")
                     navController.navigate("goal_details/${goal.id}") 
-                }
+                },
+                onDepositClick = { showDepositDialog = true }
             )
         } ?: run {
             Box(
@@ -167,7 +170,7 @@ fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // --- Monthly Snapshot ---
-        Text("Статистика за месяц", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text("Чистая прибыль / смена", fontWeight = FontWeight.Bold, fontSize = 18.sp)
         Spacer(modifier = Modifier.height(12.dp))
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -177,8 +180,10 @@ fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
             Column(Modifier.padding(20.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column {
-                        Text("Чистая прибыль", fontSize = 12.sp, color = Color.Gray)
-                        Text("${monthlyStats.profit.toInt()} ₸", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = SuccessGreen)
+                        val label = if (monthlyStats.profit >= 0) "Чистая прибыль" else "Убыток"
+                        val color = if (monthlyStats.profit >= 0) SuccessGreen else Color.Red
+                        Text(label, fontSize = 12.sp, color = Color.Gray)
+                        Text(CurrencyFormatter.format(monthlyStats.profit), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = color)
                     }
                     Box(Modifier.size(40.dp).background(BrandPurpleLight, CircleShape), contentAlignment = Alignment.Center) {
                         Icon(Icons.Default.TrendingUp, null, tint = BrandPurple)
@@ -186,7 +191,7 @@ fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    MetricItem("Выручка", "${monthlyStats.gross.toInt()} ₸", Color.Gray)
+                    MetricItem("Выручка", CurrencyFormatter.format(monthlyStats.gross), Color.Gray)
                     MetricItem("Смены", "${monthlyStats.count}", Color.Gray)
                 }
             }
@@ -204,6 +209,18 @@ fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
         } ?: Text("Записей пока нет", color = Color.Gray, fontSize = 12.sp)
 
         Spacer(modifier = Modifier.height(100.dp))
+    }
+
+    if (showDepositDialog && activeGoal != null) {
+        DepositDialog(
+            goalId = activeGoal!!.id,
+            todayProfit = monthlyStats.profit,
+            onDismiss = { showDepositDialog = false },
+            onConfirm = { amount ->
+                viewModel.depositToGoal(activeGoal!!.id, amount)
+                showDepositDialog = false
+            }
+        )
     }
 }
 
@@ -233,10 +250,11 @@ fun ShiftSummaryCard(shift: Shift, onClick: () -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text(text = dateFormat.format(shift.date), fontSize = 12.sp, color = Color.Gray)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    MetricItem("Чистая", "${shift.netProfit.toInt()} ₸", SuccessGreen)
-                    MetricItem("Выручка", "${shift.grossIncome.toInt()} ₸", Color.Gray)
+                    MetricItem("Чистая", CurrencyFormatter.format(shift.netProfit), SuccessGreen)
+                    MetricItem("Выручка", CurrencyFormatter.format(shift.grossIncome), Color.Gray)
                 }
             }
         }
     }
 }
+

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.taxigoal.ui.components.DepositDialog
 import com.example.taxigoal.ui.components.GoalCard
 import com.example.taxigoal.ui.theme.AppBackground
 import com.example.taxigoal.ui.theme.BrandPurple
@@ -26,7 +27,10 @@ import com.example.taxigoal.viewmodel.MainViewModel
 @Composable
 fun GoalsScreen(navController: NavController, viewModel: MainViewModel) {
     val goals by viewModel.goals.collectAsState()
+    val monthlyStats by viewModel.monthlyStats.collectAsState()
+    
     var showAddDialog by remember { mutableStateOf(false) }
+    var selectedGoalIdForDeposit by remember { mutableStateOf<Long?>(null) }
 
     Column(
         modifier = Modifier
@@ -66,7 +70,9 @@ fun GoalsScreen(navController: NavController, viewModel: MainViewModel) {
                 items(goals) { goal ->
                     GoalCard(
                         goal = goal,
-                        onEditClick = { navController.navigate("goal_details/${goal.id}") }
+                        avgDailyProfit = monthlyStats.avgDailyProfit,
+                        onEditClick = { navController.navigate("goal_details/${goal.id}") },
+                        onDepositClick = { selectedGoalIdForDeposit = goal.id }
                     )
                 }
             }
@@ -79,6 +85,18 @@ fun GoalsScreen(navController: NavController, viewModel: MainViewModel) {
             onConfirm = { title, amount ->
                 viewModel.addGoal(title, amount)
                 showAddDialog = false
+            }
+        )
+    }
+
+    if (selectedGoalIdForDeposit != null) {
+        DepositDialog(
+            goalId = selectedGoalIdForDeposit!!,
+            todayProfit = monthlyStats.profit,
+            onDismiss = { selectedGoalIdForDeposit = null },
+            onConfirm = { amount ->
+                viewModel.depositToGoal(selectedGoalIdForDeposit!!, amount)
+                selectedGoalIdForDeposit = null
             }
         )
     }

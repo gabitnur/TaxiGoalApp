@@ -115,6 +115,7 @@ fun SettingsScreen(navController: NavController, viewModel: MainViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
 
         SettingsSection(title = "Инструменты") {
+            SettingsItem("Мой автомобиль", Icons.Default.DirectionsCar) { navController.navigate("vehicle") }
             SettingsItem("Цели", Icons.Default.EmojiEvents) { navController.navigate(Screen.Goals.route) }
             SettingsItem("AI Помощник", Icons.Default.SmartToy) { navController.navigate(Screen.AIChat.route) }
             SettingsItem("Gemini API", Icons.Default.VpnKey) { navController.navigate(Screen.GeminiApi.route) }

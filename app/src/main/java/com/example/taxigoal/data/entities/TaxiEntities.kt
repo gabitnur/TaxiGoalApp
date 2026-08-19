@@ -11,11 +11,14 @@ data class Shift(
     val date: Date = Date(),
     val grossIncome: Double = 0.0,
     val fuelCost: Double = 0.0,
+    val foodCost: Double = 0.0,
+    val washCost: Double = 0.0,
     val mileage: Double = 0.0,
     val maintenanceCost: Double = 0.0,
     val fineCost: Double = 0.0,
     val otherExpenses: Double = 0.0,
     val commissions: Double = 0.0,
+    val depreciation: Double = 0.0,
     val netProfit: Double = 0.0,
     val goalId: Long? = null 
 )
@@ -70,6 +73,21 @@ data class UserProfile(
     val accountType: String, // GOOGLE, GUEST
     val createdAt: Date = Date(),
     val lastLoginAt: Date = Date()
+)
+
+// 6. Автомобиль
+@Entity(tableName = "vehicles")
+data class Vehicle(
+    @PrimaryKey val userId: String,
+    val brand: String = "",
+    val model: String = "",
+    val currentMileage: Double = 0.0,
+    val fuelConsumption: Double = 0.0, // l/100km
+    val fuelPrice: Double = 0.0, // per liter
+    val depreciationPerKm: Double = 0.0,
+    val maintenancePerKm: Double = 0.0,
+    val tiresPerKm: Double = 0.0,
+    val otherPerKm: Double = 0.0
 )
 
 class DateConverters {

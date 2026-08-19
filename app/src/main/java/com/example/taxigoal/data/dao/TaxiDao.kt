@@ -69,4 +69,11 @@ interface TaxiDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAppLog(log: AppLog)
+
+    // Vehicle
+    @Query("SELECT * FROM vehicles WHERE userId = :userId LIMIT 1")
+    fun getVehicle(userId: String): Flow<Vehicle?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateVehicle(vehicle: Vehicle)
 }

@@ -10,8 +10,8 @@ import com.example.taxigoal.data.dao.TaxiDao
 import com.example.taxigoal.data.entities.*
 
 @Database(
-    entities = [Shift::class, Goal::class, FinancialTransaction::class, ErrorLog::class, AppLog::class, UserProfile::class],
-    version = 2,
+    entities = [Shift::class, Goal::class, FinancialTransaction::class, ErrorLog::class, AppLog::class, UserProfile::class, Vehicle::class],
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(DateConverters::class)
@@ -30,7 +30,7 @@ abstract class TaxiDatabase : RoomDatabase() {
                     TaxiDatabase::class.java,
                     "taxi_income_db"
                 )
-                .fallbackToDestructiveMigration() // Increment version to 2
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance

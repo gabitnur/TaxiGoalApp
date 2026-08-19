@@ -2,22 +2,30 @@ package com.example.taxigoal.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.taxigoal.data.entities.Goal
 import com.example.taxigoal.ui.theme.BrandPurple
 import com.example.taxigoal.ui.theme.BrandPurpleLight
 import com.example.taxigoal.ui.theme.ProfitGreen
+import com.example.taxigoal.utils.CurrencyFormatter
+import java.util.*
+import kotlin.math.ceil
 
 @Composable
 fun GoalCard(
     goal: Goal,
+    avgDailyProfit: Double = 0.0,
     onEditClick: () -> Unit,
+    onDepositClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -45,14 +53,18 @@ fun GoalCard(
 
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = goal.title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = Color.Black)
-            Text(text = goal.description, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            
+            if (goal.description.isNotBlank()) {
+                Text(text = goal.description, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
             
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                StatColumn(label = "Цель", value = "${goal.targetAmount.toInt()} ₸", valueColor = BrandPurple)
-                StatColumn(label = "Накоплено", value = "${goal.accumulatedAmount.toInt()} ₸", valueColor = ProfitGreen)
-                StatColumn(label = "Осталось", value = "${(goal.targetAmount - goal.accumulatedAmount).coerceAtLeast(0.0).toInt()} ₸", valueColor = Color.Red)
+                StatColumn(label = "Цель", value = CurrencyFormatter.format(goal.targetAmount), valueColor = BrandPurple)
+                StatColumn(label = "Накоплено", value = CurrencyFormatter.format(goal.accumulatedAmount), valueColor = ProfitGreen)
+                val remaining = (goal.targetAmount - goal.accumulatedAmount).coerceAtLeast(0.0)
+                StatColumn(label = "Осталось", value = CurrencyFormatter.format(remaining), valueColor = if (remaining > 0) Color.Red else ProfitGreen)
             }
 
             val progress = if (goal.targetAmount > 0) (goal.accumulatedAmount / goal.targetAmount).toFloat().coerceIn(0f, 1f) else 0f
@@ -65,13 +77,44 @@ fun GoalCard(
                 strokeCap = androidx.compose.ui.graphics.StrokeCap.Round
             )
             
-            Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.End) {
+            Row(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                // Forecast logic
+                if (progress >= 1f) {
+                    Text("🎯 Цель достигнута!", color = ProfitGreen, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                } else if (avgDailyProfit > 0) {
+                    val remaining = goal.targetAmount - goal.accumulatedAmount
+                    val days = ceil(remaining / avgDailyProfit).toInt()
+                    val calendar = Calendar.getInstance()
+                    calendar.add(Calendar.DAY_OF_YEAR, days)
+                    val dateStr = java.text.SimpleDateFormat("MMM yyyy", Locale("ru")).format(calendar.time)
+                    
+                    Text(
+                        text = "Прогноз: ~ $days дн. (до $dateStr)",
+                        fontSize = 11.sp,
+                        color = Color.Gray
+                    )
+                } else {
+                    Text("Начните смены для прогноза", fontSize = 11.sp, color = Color.Gray)
+                }
+                
                 Text(
                     text = "${(progress * 100).toInt()}%",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     color = BrandPurple
                 )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onDepositClick,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = BrandPurpleLight, contentColor = BrandPurple)
+            ) {
+                Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Отложить с прибыли", fontWeight = FontWeight.Bold)
             }
         }
     }

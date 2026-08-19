@@ -228,6 +228,7 @@ fun TaxiGoalNavigation() {
                     composable(Screen.AppUpdate.route) { AppUpdateScreen(navController, viewModel) }
                     composable(Screen.ErrorLog.route) { ErrorLogScreen(navController, viewModel) }
                     composable(Screen.Diagnostics.route) { DiagnosticsScreen(navController, viewModel) }
+                    composable("vehicle") { VehicleScreen(navController, viewModel) }
                     composable(Screen.GeminiDiagnostic.route) { GeminiDiagnosticScreen(navController) }
                     composable(Screen.About.route) { AboutScreen(navController) }
                     composable("report_bug") { ReportBugScreen(navController, viewModel) }
