@@ -5,52 +5,85 @@ const geminiApiKey = defineSecret("GEMINI_API_KEY");
 
 // Primary model identifier for deep debug
 const PRIMARY_MODEL = "gemini-flash-latest";
-const API_VERSION = "v1.5-flash"; // Internal mapping
 const ENDPOINT_HOST = "generativelanguage.googleapis.com";
 
 export async function chat(message: string, context: string, requestId: string) {
-    const apiKey = geminiApiKey.value();
-    if (!apiKey) {
-        throw new Error("GEMINI_API_KEY is not configured on server");
+    let apiKey = "";
+    try {
+        apiKey = geminiApiKey.value();
+    } catch (e) {
+        console.error(`[Gemini][${requestId}] SECRET_ERROR | GEMINI_API_KEY could not be read from secrets`);
     }
 
-    console.info(`[Gemini][${requestId}] DEBUG_API_REQUEST | Model: ${PRIMARY_MODEL} | Provider: Google | Host: ${ENDPOINT_HOST}`);
+    if (!apiKey) {
+        console.error(`[Gemini][${requestId}] CONFIG_ERROR | GEMINI_API_KEY is empty or missing`);
+        return {
+            success: false,
+            errorType: "CONFIGURATION_ERROR",
+            message: "GEMINI_API_KEY is not configured on server",
+            debug: { requestId, status: "SECRET_MISSING" }
+        };
+    }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: PRIMARY_MODEL });
-
-    const prompt = `${context}\n\nUser Question: ${message}`;
+    console.info(`GEMINI_DEBUG_REQUEST | RequestId: ${requestId} | Model: ${PRIMARY_MODEL} | Host: ${ENDPOINT_HOST}`);
 
     try {
+        const genAI = new GoogleGenerativeAI(apiKey);
+
+        // Debug model requested
+        console.info(`GEMINI_DEBUG_MODEL_INIT | RequestId: ${requestId} | RequestedModel: ${PRIMARY_MODEL}`);
+        const model = genAI.getGenerativeModel({ model: PRIMARY_MODEL });
+
+        const prompt = `${context}\n\nUser Question: ${message}`;
+        console.info(`GEMINI_DEBUG_API_REQUEST | RequestId: ${requestId} | PromptLength: ${prompt.length}`);
+
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
         if (!text) {
+            console.error(`[Gemini][${requestId}] EMPTY_RESPONSE | AI returned no text`);
             throw new Error("EMPTY_RESPONSE");
         }
 
         return { success: true, reply: text };
     } catch (error: any) {
-        console.error(`[Gemini][${requestId}] DEBUG ERROR | Status: ${error.status || "UNKNOWN"} | Msg: ${error.message}`);
+        // SERVER LOG: Log the full error object safely
+        const errorDetails = {
+            name: error.name || "UnknownError",
+            message: error.message || "No message",
+            status: error.status || "UNKNOWN",
+            statusCode: error.statusCode || (error.response ? error.response.status : "UNKNOWN"),
+            statusText: error.statusText || (error.response ? error.response.statusText : "UNKNOWN"),
+            reason: error.reason || "NONE"
+        };
 
-        // Extract as much info as possible from the SDK error
+        console.error(`GEMINI_DEBUG_EXCEPTION | RequestId: ${requestId} | Details: ${JSON.stringify(errorDetails)}`);
+
+        if (error.response && error.response.data) {
+            // Log raw response body if available (usually in error.response.data or similar)
+            try {
+                console.error(`GEMINI_DEBUG_RESPONSE_BODY | RequestId: ${requestId} | Body: ${JSON.stringify(error.response.data)}`);
+            } catch (e) {}
+        }
+
+        // Return structured debug info to Android
         const debugInfo = {
             requestId: requestId,
-            provider: "google-gemini",
+            provider: "google-generative-ai",
             model: PRIMARY_MODEL,
-            apiVersion: API_VERSION,
-            endpointHost: ENDPOINT_HOST,
-            httpStatus: error.status || 500,
-            status: error.statusText || "INTERNAL_ERROR",
-            message: error.message || "Unknown error occurred"
+            apiVersion: "NOT_EXPOSED",
+            httpStatus: errorDetails.statusCode,
+            status: errorDetails.status,
+            message: errorDetails.message,
+            errorClass: errorDetails.name
         };
 
         return {
             success: false,
             debug: debugInfo,
-            errorType: mapErrorType(error.message),
-            message: error.message
+            errorType: mapErrorType(errorDetails.message),
+            message: errorDetails.message
         };
     }
 }
@@ -69,7 +102,11 @@ function mapErrorType(msg: string): string {
  * Diagnostic function to verify model connectivity.
  */
 export async function testConnectivity() {
-    const apiKey = geminiApiKey.value();
+    let apiKey = "";
+    try {
+        apiKey = geminiApiKey.value();
+    } catch (e) {}
+
     if (!apiKey) return { status: "SECRET_MISSING" };
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -87,7 +124,8 @@ export async function testConnectivity() {
         return {
             model: PRIMARY_MODEL,
             status: "ERROR",
-            error: error.message
+            error: error.message,
+            statusCode: error.status || error.statusCode
         };
     }
 }

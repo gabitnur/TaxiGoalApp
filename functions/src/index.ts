@@ -1,5 +1,5 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as gemini from "./gemini";
 import * as github from "./github";
 import { sanitize } from "./sanitizer";
@@ -7,17 +7,17 @@ import { generateFingerprint } from "./fingerprint";
 
 admin.initializeApp();
 
-export const geminiChat = functions.https.onCall({
+export const geminiChat = onCall({
     secrets: ["GEMINI_API_KEY"],
     region: "us-central1"
 }, async (request) => {
     if (!request.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "Auth required");
+        throw new HttpsError("unauthenticated", "Auth required");
     }
 
     const { message, safeContext, requestId } = request.data;
     if (!message) {
-        throw new functions.https.HttpsError("invalid-argument", "Message is missing");
+        throw new HttpsError("invalid-argument", "Message is missing");
     }
 
     const currentRequestId = requestId || `FUN-${Date.now()}`;
@@ -26,6 +26,7 @@ export const geminiChat = functions.https.onCall({
         // chat function now returns a structured object { success, reply?, debug?, errorType?, message? }
         return await gemini.chat(message, safeContext || "", currentRequestId);
     } catch (error: any) {
+        console.error(`INDEX_DEBUG_ERROR | RequestId: ${currentRequestId} | Message: ${error.message} | Stack: ${error.stack}`);
         return {
             success: false,
             errorType: "UNKNOWN_ERROR",
@@ -38,12 +39,12 @@ export const geminiChat = functions.https.onCall({
 /**
  * Endpoint for verifying Gemini model availability.
  */
-export const verifyGeminiModel = functions.https.onCall({
+export const verifyGeminiModel = onCall({
     secrets: ["GEMINI_API_KEY"],
     region: "us-central1"
 }, async (request) => {
     if (!request.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "Auth required");
+        throw new HttpsError("unauthenticated", "Auth required");
     }
 
     try {
@@ -54,12 +55,12 @@ export const verifyGeminiModel = functions.https.onCall({
     }
 });
 
-export const submitDiagnosticReport = functions.https.onCall({
+export const submitDiagnosticReport = onCall({
     secrets: ["GITHUB_TOKEN"],
     region: "us-central1"
 }, async (request) => {
     if (!request.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "Auth required");
+        throw new HttpsError("unauthenticated", "Auth required");
     }
 
     const report = request.data;

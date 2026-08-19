@@ -1,11 +1,11 @@
 {
-  "versionCode": 27,
-  "versionName": "1.0.27",
-  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.27/update.apk",
+  "versionCode": 30,
+  "versionName": "1.0.30",
+  "apkUrl": "https://github.com/gabitnur/TaxiGoalApp/releases/download/v1.0.30/update.apk",
   "releaseNotes": [
-    "Обновление до v1.0.27 (DEBUG)",
-    "Включен режим глубокой диагностики Gemini Chat",
-    "RequestId для отслеживания запросов",
-    "Расширенное логирование ошибок на стороне Backend"
+    "Обновление до v1.0.30",
+    "Переход на защищенный бэкенд Vercel",
+    "Gemini AI работает через шифрованный канал",
+    "Удалены все секретные ключи из APK"
   ]
 }
