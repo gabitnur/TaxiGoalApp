@@ -9,7 +9,7 @@ import org.json.JSONObject
 class GeminiRepository(private val context: Context) {
 
     private val model = GenerativeModel(
-        modelName = "gemini-1.5-flash",
+        modelName = "gemini-flash-latest",
         apiKey = com.example.taxigoal.BuildConfig.GEMINI_API_KEY
     )
 
